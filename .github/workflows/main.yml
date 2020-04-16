@@ -18,6 +18,6 @@ jobs:
         with:
           java-version: 1.11
       - name: JDK Compile
-        run: javac src/main/Main.java
+        run: cd src && javac main/Main.java
       - name: Run program
-        run: java src/main/Main
+        run: java -Xmx256m -classpath src/ main.Main
