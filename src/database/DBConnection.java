@@ -67,6 +67,14 @@ public class DBConnection {
         System.out.println("Connection was closed successfully.");
     }
 
+    public Connection getDBConn() {
+        return connection;
+    }
+
+    public Boolean instanceIsNull() {
+        return (instance == null);
+    }
+
     // HERE STARTS THE QUERY EXECUTION METHODS
 
     /**
