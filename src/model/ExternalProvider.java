@@ -33,7 +33,7 @@ public class ExternalProvider {
         return available;
     }
 
-    public boolean getAddress(){
+    public Address getAddress(){
         return address;
     }
 
