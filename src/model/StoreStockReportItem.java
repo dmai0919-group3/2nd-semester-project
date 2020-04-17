@@ -13,17 +13,17 @@ public class StoreStockReportItem {
         this.product = product;
     }
 
-    public StoreStockReportItem(Product product, int amount) {
+    public StoreStockReportItem(Product product, int quantity) {
         this.product = product;
-        this.amount = amount;
+        this.quantity = quantity;
     }
 
     public int getAmount(){
-        return amount;
+        return quantity;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setAmount(int quantity) {
+        this.quantity = quantity;
     }
 }
 
