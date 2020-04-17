@@ -25,3 +25,4 @@ hs_err_pid*
 # Jetbrains IntelliJ IDEA project files
 /.idea/
 *.iml
+/out/
