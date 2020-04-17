@@ -24,6 +24,4 @@ jobs:
       - name: JDK Compile
         run: cd src && javac main/Main.java
       - name: Run program
-        env:
-          TEVOS_JDBC_URL: ${{ secrets.TEVOS_JDBC_URL }}
-        run: java -Xmx256m -classpath src/ main.Main
+        run: java -Xmx256m -classpath "src/:lib/mssql-jdbc-8.2.2.jre11.jar" main.Main
