@@ -6,12 +6,14 @@ public class ExternalProvider {
     private String name;
     private String email;
     private boolean available;
+    private Address address;
 
-    public ExternalProvider(int id, String name, String email, boolean available) {
+    public ExternalProvider(int id, String name, String email, boolean available, Address address) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.available = available;
+        this.address = address;
     }
 
 
@@ -31,6 +33,9 @@ public class ExternalProvider {
         return available;
     }
 
+    public boolean getAddress(){
+        return address;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -42,6 +47,10 @@ public class ExternalProvider {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+    
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }
 
