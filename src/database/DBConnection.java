@@ -32,13 +32,14 @@ public class DBConnection {
             connection = DriverManager.getConnection(jdbc_url);
             connection.setAutoCommit(true);
             DatabaseMetaData dma = connection.getMetaData();
-            System.out.println("Connected to: " + dma.getURL());
-            System.out.println("Driver: " + dma.getDriverName());
-            System.out.println("Database product name: " + dma.getDatabaseProductName());
+//            System.out.println("Connected to: " + dma.getURL());
+//            System.out.println("Driver: " + dma.getDriverName());
+//            System.out.println("Database product name: " + dma.getDatabaseProductName());
+            System.out.println("Successfully connected to the database.");
         } catch(Exception e) {
-            System.out.println("Problems with the connection to the database: ");
-            System.out.println(e.getMessage());
-            System.out.println("Database URL: " + jdbc_url);
+            System.err.println("Problems with the connection to the database: ");
+            System.err.println(e.getMessage());
+            System.err.println("Database URL: ****");
         }
     }
 
