@@ -103,7 +103,27 @@ public class ProductDB implements DBInterface<Product> {
      */
     @Override
     public int update(Product value) {
-        return 0;
+        String queryProduct = "UPDATE 'Product' SET (name=?, weight=?, price=?, minQuantity=?) WHERE id=" + value.getId() + ";";
+        String queryStock = "UPDATE 'Stock' SET (quantity=?) WHERE product_id=" + value.getId() + " AND warehouse_id=?;";
+        List<Stock> stockList = value.getStock();
+        int rows = -1;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryProduct);
+            s.setString(1, value.getName());
+            s.setInt(2, value.getWeight());
+            s.setDouble(3, value.getPrice());
+            s.setInt(4, value.getMinQuantity());
+            rows = db.executeQuery(s.toString());
+            for (Stock stock : stockList) {
+                s = db.getDBConn().prepareStatement(queryStock);
+                s.setInt(1, stock.getQuantity());
+                s.setInt(2, stock.getWarehouse().getId());
+                rows += db.executeQuery(s.toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rows;
     }
 
     /**
