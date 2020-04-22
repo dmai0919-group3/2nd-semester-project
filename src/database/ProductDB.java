@@ -89,7 +89,7 @@ public class ProductDB implements DBInterface<Product> {
             s.setString(2, value);
             return db.executeSelect(s.toString());
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return null;
     }
@@ -121,7 +121,7 @@ public class ProductDB implements DBInterface<Product> {
                 rows += db.executeQuery(s.toString());
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return rows;
     }
@@ -135,6 +135,15 @@ public class ProductDB implements DBInterface<Product> {
      */
     @Override
     public int delete(Product value) {
-        return 0;
+        // Because of the tables cascade rule, we dont need to have separate stock query
+        String query = "DELETE FROM 'Product' WHERE id=?";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setInt(1, value.getId());
+            return db.executeQuery(s.toString());
+        } catch (SQLException e) {
+             System.err.println(e.getMessage());
+        }
+        return -1;
     }
 }
