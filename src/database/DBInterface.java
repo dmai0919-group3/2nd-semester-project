@@ -17,12 +17,21 @@ public interface DBInterface<T> {
     public int create(T value);
 
     /**
-     * This method takes an object and converts it to a valid SQL SELECT query, which is the executed
-     * @param value it's the given T type object
-     * @return the ResultSet containing the result of the query
+     * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
+     * @param id is the ID which we want to search for in the database
+     * @return the single object with the given ID
      * @see DBConnection executeSelect() method
      */
-    public ResultSet select(T value);
+    public T selectByID(int id);
+
+    /**
+     * This method takes a column name and a search value, converts it to a valid SQL SELECT query, which is the executed
+     * @param column the columns name we want to search in
+     * @param value the value we want to search for
+     * @return the ResultSet containing all the results of the query
+     * @see DBConnection executeSelect() method
+     */
+    public ResultSet selectByString(String column, String value);
 
     /**
      * This method takes an object and converts it to a valid SQL UPDATE query, which is the executed
