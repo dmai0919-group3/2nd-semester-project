@@ -77,11 +77,20 @@ public class ProductDB implements DBInterface<Product> {
      * Given a column (product name) and a value it finds all the products which name contains the given value
      * @param column the columns name we want to search in, in this case the name of the product
      * @param value  the value we want to search for
-     * @return the ResultSet containing all the results of the query
+     * @return the ResultSet containing all the results of the query, null if there's an error and an empty ResultSet if there are 0 results
      * @see DBConnection executeSelect() method
      */
     @Override
     public ResultSet selectByString(String column, String value) {
+        String query = "SELECT * FROM 'Product' WHERE ?=?;";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setString(1, column);
+            s.setString(2, value);
+            return db.executeSelect(s.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
