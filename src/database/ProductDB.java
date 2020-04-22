@@ -53,6 +53,22 @@ public class ProductDB implements DBInterface<Product> {
      */
     @Override
     public Product selectByID(int id) {
+        String query = "SELECT TOP 1 * FROM 'Product' WHERE id=?;";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            ResultSet rs = db.executeSelect(s.toString());
+            if (rs.next()) {
+                return new Product(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getInt("weight"),
+                        rs.getDouble("price"),
+                        rs.getInt("minQuantity"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 
