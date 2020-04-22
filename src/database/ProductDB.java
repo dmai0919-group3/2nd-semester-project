@@ -1,10 +1,15 @@
 package database;
 
 import model.Product;
+import model.Stock;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class ProductDB implements DBInterface<Product> {
+    DBConnection db = DBConnection.getInstance();
 
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
@@ -15,7 +20,28 @@ public class ProductDB implements DBInterface<Product> {
      */
     @Override
     public int create(Product value) {
-        return 0;
+        String queryProd = "INSERT INTO 'Product' ('name', 'weight', 'price', 'minQuantity') VALUES (?, ? ,? , ?);";
+        String queryStock = "INSERT INTO 'Stock' ('product_id', 'warehouse_id', 'quantity') VALUES (?, ? ?);";
+        List<Stock> stockList = value.getStock();
+        int productID = -1;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryProd);
+            s.setString(1, value.getName()); // name
+            s.setInt(2, value.getWeight()); // weight
+            s.setDouble(3, value.getPrice()); // price
+            s.setInt(4, value.getMinQuantity()); // minQuantity
+            productID = db.executeInsertWithID(s.toString());
+            for (Stock stock : stockList) {
+                s = db.getDBConn().prepareStatement(queryStock);
+                s.setInt(1, productID);
+                s.setInt(2, stock.getWarehouse().getId());
+                s.setInt(3, stock.getQuantity());
+                db.executeInsertWithID(s.toString());
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return productID;
     }
 
     /**
