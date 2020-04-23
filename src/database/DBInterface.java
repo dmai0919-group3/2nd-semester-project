@@ -10,11 +10,12 @@ public interface DBInterface<T> {
 
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
+     *
      * @param value it's the given T type object
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
-    public int create(T value);
+    int create(T value);
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
@@ -22,7 +23,7 @@ public interface DBInterface<T> {
      * @return the single object with the given ID
      * @see DBConnection executeSelect() method
      */
-    public T selectByID(int id);
+    T selectByID(int id);
 
     /**
      * This method takes a column name and a search value, converts it to a valid SQL SELECT query, which is the executed
@@ -31,7 +32,7 @@ public interface DBInterface<T> {
      * @return the ResultSet containing all the results of the query
      * @see DBConnection executeSelect() method
      */
-    public ResultSet selectByString(String column, String value);
+    ResultSet selectByString(String column, String value);
 
     /**
      * This method takes an object and converts it to a valid SQL UPDATE query, which is the executed
@@ -39,7 +40,7 @@ public interface DBInterface<T> {
      * @return the number of rows affected by the update
      * @see DBConnection executeQuery() method
      */
-    public int update(T value);
+    int update(T value);
 
     /**
      * This method takes an object and converts it to a valid SQL DELETE query, which is the executed
@@ -47,5 +48,5 @@ public interface DBInterface<T> {
      * @return the number of rows deleted from the table
      * @see DBConnection executeQuery()
      */
-    public int delete(T value);
+    int delete(T value);
 }
