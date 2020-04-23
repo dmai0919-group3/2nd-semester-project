@@ -3,15 +3,15 @@ package model;
 import java.time.LocalDate;
 import java.util.List;
 
-public class StoreStockReport {
+public class StockReport {
 
     private int id;
     private LocalDate date;
     private String note;
     private Store store;
-    private List<StoreStockReportItem> items;
+    private List<StockReportItem> items;
 
-    public StoreStockReport(int id, LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
+    public StockReport(int id, LocalDate date, String note, Store store, List<StockReportItem> items) {
         this.id = id;
         this.date = date;
         this.note = note;
@@ -19,7 +19,7 @@ public class StoreStockReport {
         this.items = items;
     }
 
-    public StoreStockReport(LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
+    public StockReport(LocalDate date, String note, Store store, List<StockReportItem> items) {
         this.date = date;
         this.note = note;
         this.store = store;
@@ -54,15 +54,15 @@ public class StoreStockReport {
         this.store = store;
     }
 
-    public void addItem(StoreStockReportItem item) {
+    public void addItem(StockReportItem item) {
         items.add(item);
     }
 
-    public List<StoreStockReportItem> getItems() {
+    public List<StockReportItem> getItems() {
         return items;
     }
 
-    public void setItems(List<StoreStockReportItem> items) {
+    public void setItems(List<StockReportItem> items) {
         this.items = items;
     }
 }

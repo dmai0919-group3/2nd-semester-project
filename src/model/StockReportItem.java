@@ -1,11 +1,11 @@
 package model;
 
-public class StoreStockReportItem {
+public class StockReportItem {
 
     private int quantity;
     private Product product;
 
-    public StoreStockReportItem(Product product, int quantity) {
+    public StockReportItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
