@@ -98,6 +98,26 @@ public class UserDB implements DBInterface<User>{
      */
     @Override
     public ResultSet selectByString(String column, String value) {
+        String queryStore = "SELECT * FROM 'Store' WHERE ?=?";
+        String queryWarehouse = "SELECT * FROM 'Warehouse' WHERE ?=?";
+        ResultSet rs;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryStore);
+            s.setString(1, column);
+            s.setString(2, value);
+            rs = db.executeSelect(s.toString());
+            if (rs.first()) {
+                return rs;
+            } else {
+                s = db.getDBConn().prepareStatement(queryWarehouse);
+                s.setString(1, column);
+                s.setString(2, value);
+                rs = db.executeSelect(s.toString());
+                return rs;
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 
