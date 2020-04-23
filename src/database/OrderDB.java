@@ -46,6 +46,7 @@ public class OrderDB implements DBInterface<Order> {
 		
 		try {
 			PreparedStatement s = db.getDBConn().prepareStatement(query);
+			
 			s.setInt(1, id);
 			
 			ResultSet rs = db.executeSelect(s.toString());
@@ -69,8 +70,18 @@ public class OrderDB implements DBInterface<Order> {
 
 	@Override
 	public ResultSet selectByString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		String query = "SELECT * FROM 'Order' WHERE ?=?;";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            
+            s.setString(1, column);
+            s.setString(2, value);
+            
+            return db.executeSelect(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
 	}
 
 	@Override
