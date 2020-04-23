@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Date;
 import  java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public class Order {
 
     private int id;
-	private LocalDate date;
+	private Date date;
     private double price;
     private Warehouse warehouse;
     private Store store;
@@ -18,7 +19,7 @@ public class Order {
     	
     }
     
-    public Order(LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
+    public Order(Date date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
 		super();
 		this.date = date;
 		this.price = price;
@@ -30,7 +31,7 @@ public class Order {
 
 
 
-	public Order(int id, LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
+	public Order(int id, Date date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> list) {
 		super();
 		this.id = id;
 		this.date = date;
@@ -38,7 +39,7 @@ public class Order {
 		this.warehouse = warehouse;
 		this.store = store;
 		this.items = items;
-		this.status = status;
+		this.status = list;
 	}
     
     public int getId() {
@@ -47,10 +48,10 @@ public class Order {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public LocalDate getDate() {
+	public Date getDate() {
 		return date;
 	}
-	public void setDate(LocalDate date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	public double getPrice() {
