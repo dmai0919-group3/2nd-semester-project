@@ -6,7 +6,7 @@ public class Warehouse extends User {
         super(id, name, password, email, address);
     }
 
-	public Warehouse() {
-		// TODO Auto-generated constructor stub
-	}
+    public Warehouse(String name, String password, String email, Address address) {
+        super(name, password, email, address);
+    }
 }

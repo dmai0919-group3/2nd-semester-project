@@ -21,9 +21,19 @@ public class Address {
         this.city = city;
         this.zipcode = zipcode;
         this.region = region;
-        this.country = country;       
+        this.country = country;
     }
 
+    public Address (String number, String supplement, String street, String city, String zipcode, String region, String country)
+    {
+        this.number = number;
+        this.supplement = supplement;
+        this.street = street;
+        this.city = city;
+        this.zipcode = zipcode;
+        this.region = region;
+        this.country = country;
+    }
 
     public int getId() {
         return id;

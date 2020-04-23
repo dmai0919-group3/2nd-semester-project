@@ -6,7 +6,7 @@ public class Store extends User {
         super(id, name, password, email, address);
     }
 
-	public Store() {
-		// TODO Auto-generated constructor stub
-	}
+    public Store(String name, String password, String email, Address address) {
+        super(name, password, email, address);
+    }
 }

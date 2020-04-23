@@ -10,15 +10,8 @@ public class WarehouseOrder {
     private LocalDate date;
     private String status;
     private Warehouse warehouse;
+    private Provider provider;
     private List<WarehouseOrderItem> items;
-
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
 
     public WarehouseOrder(int id, LocalDate date, String status, Warehouse warehouse)
     {
@@ -52,8 +45,21 @@ public class WarehouseOrder {
     public void addItem(WarehouseOrderItem item) {
         items.add(item);
     }
+
     public List<WarehouseOrderItem> getItems() {
         return items;
+    }
+
+    public void setItems(List<WarehouseOrderItem> items) {
+        this.items = items;
+    }
+
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
     }
 
 }

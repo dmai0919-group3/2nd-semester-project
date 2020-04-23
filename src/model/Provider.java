@@ -16,6 +16,13 @@ public class Provider {
         this.address = address;
     }
 
+    public Provider(String name, String email, boolean available, Address address) {
+        this.name = name;
+        this.email = email;
+        this.available = available;
+        this.address = address;
+    }
+
 
     public int getId(){
         return id;

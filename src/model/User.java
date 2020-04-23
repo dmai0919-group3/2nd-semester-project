@@ -2,12 +2,11 @@ package model;
 
 public class User {
 
-    private int id;
-    private String name;
-    private String password;
-    private String email;
-
-    private Address address;
+    protected int id;
+    protected String name;
+    protected String password;
+    protected String email;
+    protected Address address;
 
     public User(int id, String name, String password, String email, Address address)
     {
@@ -22,6 +21,13 @@ public class User {
     	
     }
 
+    public User(String name, String password, String email, Address address)
+    {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.address = address;
+    }
 
     public int getId(){
         return id;
@@ -39,6 +45,10 @@ public class User {
         return email;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -49,10 +59,6 @@ public class User {
 
     public void setEmail(String email ) {
         this.email  = email ;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
     public void setAddress(Address address) {
