@@ -1,6 +1,5 @@
 package database;
 
-import model.Address;
 import model.Store;
 import model.User;
 import model.Warehouse;
@@ -8,7 +7,6 @@ import model.Warehouse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.zip.DataFormatException;
 
 public class UserDB implements DBInterface<User>{
     DBConnection db = DBConnection.getInstance();
