@@ -12,8 +12,33 @@ public class OrderDB implements DBInterface<Order> {
 
 	@Override
 	public int create(Order value) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		String query = "INSERT INTO 'Order' ('storeID', 'warehouseID', 'price', 'date') VALUES (?,?,?,?);";
+		
+		int orderID = -1;
+		try {
+			PreparedStatement s = db.getDBConn().prepareStatement(query);
+			
+			// TODO
+			/*
+			 * set values to each parameter
+			 */
+			/*s.setInt(1, 0);
+			s.setInt(2, 0);
+			s.setDouble(3, 0);
+			s.setDate(4, null);*/
+			
+			orderID = db.executeInsertWithID(query);
+			
+			// TODO
+			/*
+			 * Create status for PENDING after creating the order
+			 */
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		}
+		
+		return orderID;
 	}
 
 	@Override
