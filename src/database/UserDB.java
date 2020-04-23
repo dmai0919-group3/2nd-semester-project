@@ -130,8 +130,8 @@ public class UserDB implements DBInterface<User>{
      */
     @Override
     public int update(User value) {
-        String queryStore = "UPDATE 'Store' SET (name=?, email=?, password=?;";
-        String queryWarehouse = "UPDATE 'Warehouse' SET (name=?, email=?, password=?;";
+        String queryStore = "UPDATE 'Store' SET (name=?, email=?, password=?);";
+        String queryWarehouse = "UPDATE 'Warehouse' SET (name=?, email=?, password=?);";
         PreparedStatement s;
         AddressDB addressDB = new AddressDB();
         int rows = -1;
@@ -141,6 +141,9 @@ public class UserDB implements DBInterface<User>{
             } else if (value instanceof Warehouse) {
                 s = db.getDBConn().prepareStatement(queryWarehouse);
             } else return rows;
+            s.setString(1, value.getName());
+            s.setString(2, value.getEmail());
+            s.setString(3, value.getPassword());
             rows = db.executeQuery(s.toString());
             rows += addressDB.update(value.getAddress());
         } catch (SQLException e) {
@@ -158,6 +161,21 @@ public class UserDB implements DBInterface<User>{
      */
     @Override
     public int delete(User value) {
-        return 0;
+        String queryStore = "DELETE FROM 'Store' WHERE id=?;";
+        String queryWarehouse = "DELETE FROM 'Warehouse' WHERE id=?;";
+        PreparedStatement s;
+        int rows = -1;
+        try {
+            if (value instanceof Store) {
+                s = db.getDBConn().prepareStatement(queryStore);
+            } else if (value instanceof Warehouse) {
+                s = db.getDBConn().prepareStatement(queryWarehouse);
+            } else return rows;
+            s.setInt(1, value.getId());
+            rows = db.executeQuery(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return rows;
     }
 }
