@@ -9,29 +9,33 @@ public class Order {
 
     private int id;
 	private Date date;
+    private List<OrderStatus> status;
     private double price;
     private Warehouse warehouse;
+    /**
+     * Status is set based on newest order change
+     * This field is not stored in database
+     */
     private Store store;
     private List<OrderItem> items;
-    private List<OrderStatus> status;
-    
-    public Order() {
-    	
+
+    public Order(Store store, Warehouse warehouse) {
+        this.store = store;
+        this.warehouse = warehouse;
+        items = new LinkedList<>();
+    }
+
+    public Order(int id, Date date, List<OrderStatus> status, double price, Warehouse warehouse, Store store){
+        this.id = id;
+        this.date = date;
+        this.status = status;
+        this.price = price;
+        this.warehouse = warehouse;
+        this.store = store;
+        items = new LinkedList<>();
     }
     
-    public Order(Date date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
-		super();
-		this.date = date;
-		this.price = price;
-		this.warehouse = warehouse;
-		this.store = store;
-		this.items = items;
-		this.status = status;
-	}
-
-
-
-	public Order(int id, Date date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> list) {
+    public Order(int i, Date date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
 		super();
 		this.id = id;
 		this.date = date;
@@ -39,7 +43,7 @@ public class Order {
 		this.warehouse = warehouse;
 		this.store = store;
 		this.items = items;
-		this.status = list;
+		this.status = status;
 	}
     
     public int getId() {
@@ -84,7 +88,6 @@ public class Order {
 	public void setStatus(List<OrderStatus> orderStatus) {
 		this.status = status;
 	}
-
 }
 
 
