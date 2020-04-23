@@ -130,7 +130,23 @@ public class UserDB implements DBInterface<User>{
      */
     @Override
     public int update(User value) {
-        return 0;
+        String queryStore = "UPDATE 'Store' SET (name=?, email=?, password=?;";
+        String queryWarehouse = "UPDATE 'Warehouse' SET (name=?, email=?, password=?;";
+        PreparedStatement s;
+        AddressDB addressDB = new AddressDB();
+        int rows = -1;
+        try {
+            if (value instanceof Store) {
+                s = db.getDBConn().prepareStatement(queryStore);
+            } else if (value instanceof Warehouse) {
+                s = db.getDBConn().prepareStatement(queryWarehouse);
+            } else return rows;
+            rows = db.executeQuery(s.toString());
+            rows += addressDB.update(value.getAddress());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return rows;
     }
 
     /**
