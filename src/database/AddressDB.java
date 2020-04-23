@@ -4,7 +4,7 @@ import model.Address;
 
 import java.sql.ResultSet;
 
-public class AddressDB implements DBInterface<Address> {
+public class AddressDB implements DBInterface<Address> { // TODO METHODS NOT IMPLEMENTED!!!
 
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
