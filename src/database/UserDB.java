@@ -53,6 +53,38 @@ public class UserDB implements DBInterface<User>{
      */
     @Override
     public User selectByID(int id) {
+        String queryStore = "SELECT TOP 1 * FROM 'Store' WHERE id=?";
+        String queryWarehouse = "SELECT TOP 1 * FROM 'Warehouse' WHERE id=?";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryStore);
+            s.setInt(1, id);
+            ResultSet rs = db.executeSelect(s.toString());
+            AddressDB addressDB = new AddressDB();
+            if (rs.next()) {
+                return new Store(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        addressDB.selectByID(rs.getInt("addressID"))
+                );
+            } else {
+                s = db.getDBConn().prepareStatement(queryWarehouse);
+                s.setInt(1, id);
+                rs = db.executeSelect(s.toString());
+                if (rs.next()) {
+                    return new Warehouse(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("password"),
+                            rs.getString("email"),
+                            addressDB.selectByID(rs.getInt("addressID"))
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 
