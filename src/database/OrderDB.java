@@ -3,8 +3,14 @@ package database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Order;
+import model.OrderItem;
+import model.OrderStatus;
+import model.Store;
+import model.Warehouse;
 
 public class OrderDB implements DBInterface<Order> {
 	
@@ -17,22 +23,13 @@ public class OrderDB implements DBInterface<Order> {
 		int orderID = -1;
 		try {
 			PreparedStatement s = db.getDBConn().prepareStatement(query);
-			
-			// TODO
-			/*
-			 * set values to each parameter
-			 */
-			/*s.setInt(1, 0);
-			s.setInt(2, 0);
-			s.setDouble(3, 0);
-			s.setDate(4, null);*/
+
+			s.setInt(1, value.getStore().getId());
+			s.setInt(2, value.getWarehouse().getId());
+			s.setDouble(3, value.getPrice());
+			s.setDate(4, value.getDate());
 			
 			orderID = db.executeInsertWithID(query);
-			
-			// TODO
-			/*
-			 * Create status for PENDING after creating the order
-			 */
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 		}
@@ -42,7 +39,11 @@ public class OrderDB implements DBInterface<Order> {
 
 	@Override
 	public Order selectByID(int id) {
-		String query = "SELECT * FROM 'Order' WHERE id=?;";
+		// TODO
+		/*
+		 * Join warehouse, store, OrderItem and orderStatus tables
+		 */
+		String query = "SELECT Order.*, Warehouse.* FROM 'Order' JOIN 'Warehouse' ON Order.warehouseID = Warehouse.id WHERE order.id=?;";
 		
 		try {
 			PreparedStatement s = db.getDBConn().prepareStatement(query);
@@ -53,14 +54,16 @@ public class OrderDB implements DBInterface<Order> {
 			if (rs.next()) {
 				// TODO
 				/*
-				 * Update order model to match database
+				 * Create the object basec on the JOIN QUERY
 				 */
-				/*return new Order(
+				return new Order(
 						rs.getInt("id"),
-						rs.getInt("storeID"),
-						rs.getInt("warehouseID"),
+						rs.getDate("date"),
 						rs.getDouble("price"),
-						rs.getDate("date"));*/
+						new Warehouse(),
+						new Store(),
+						new ArrayList<OrderItem>(),
+						new ArrayList<OrderStatus>());
 			}
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());

@@ -17,6 +17,10 @@ public class User {
         this.email = email;
         this.address = address;
     }
+    
+    public User() {
+    	
+    }
 
 
     public int getId(){
