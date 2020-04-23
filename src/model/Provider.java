@@ -1,6 +1,6 @@
 package model;
 
-public class ExternalProvider {
+public class Provider {
 
     private int id;
     private String name;
@@ -8,7 +8,7 @@ public class ExternalProvider {
     private boolean available;
     private Address address;
 
-    public ExternalProvider(int id, String name, String email, boolean available, Address address) {
+    public Provider(int id, String name, String email, boolean available, Address address) {
         this.id = id;
         this.name = name;
         this.email = email;
