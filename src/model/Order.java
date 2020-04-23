@@ -11,34 +11,34 @@ public class Order {
     private double price;
     private Warehouse warehouse;
     private Store store;
-    private List<OrderItem> orderItems;
-    private List<OrderChange> orderChanges;
+    private List<OrderItem> items;
+    private List<OrderStatus> status;
     
     public Order() {
     	
     }
     
-    public Order(LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> orderItems, List<OrderChange> orderChanges) {
+    public Order(LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
 		super();
 		this.date = date;
 		this.price = price;
 		this.warehouse = warehouse;
 		this.store = store;
-		this.orderItems = orderItems;
-		this.orderChanges = orderChanges;
+		this.items = items;
+		this.status = status;
 	}
 
 
 
-	public Order(int id, LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> orderItems, List<OrderChange> orderChanges) {
+	public Order(int id, LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> items, List<OrderStatus> status) {
 		super();
 		this.id = id;
 		this.date = date;
 		this.price = price;
 		this.warehouse = warehouse;
 		this.store = store;
-		this.orderItems = orderItems;
-		this.orderChanges = orderChanges;
+		this.items = items;
+		this.status = status;
 	}
     
     public int getId() {
@@ -71,17 +71,17 @@ public class Order {
 	public void setStore(Store store) {
 		this.store = store;
 	}
-	public List<OrderItem> getOrderItems() {
-		return orderItems;
+	public List<OrderItem> getItems() {
+		return items;
 	}
-	public void setOrderItems(List<OrderItem> orderItems) {
-		this.orderItems = orderItems;
+	public void setItems(List<OrderItem> orderItems) {
+		this.items = orderItems;
 	}
-	public List<OrderChange> getOrderChanges() {
-		return orderChanges;
+	public List<OrderStatus> getStatus() {
+		return status;
 	}
-	public void setOrderChanges(List<OrderChange> orderChanges) {
-		this.orderChanges = orderChanges;
+	public void setStatus(List<OrderStatus> orderStatus) {
+		this.status = status;
 	}
 
 }
