@@ -6,6 +6,7 @@ public class User {
     private String name;
     private String password;
     private String email;
+
     private Address address;
 
     public User(int id, String name, String password, String email, Address address)
@@ -46,5 +47,12 @@ public class User {
         this.email  = email ;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 }
 
