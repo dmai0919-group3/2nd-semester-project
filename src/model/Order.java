@@ -7,85 +7,82 @@ import java.util.List;
 public class Order {
 
     private int id;
-    private LocalDate date_created;
-    private LocalDate date_delivered;
-    private Status status;
+	private LocalDate date;
     private double price;
     private Warehouse warehouse;
     private Store store;
     private List<OrderItem> orderItems;
-
-    public Order(int id, LocalDate date_created, LocalDate date_delivered, String status, double price, Warehouse warehouse, Store store){
-        this.id = id;
-        this.date_created = date_created;
-        this.date_delivered = date_delivered;
-        this.status = Status.PENDING;
-        this.price = price;
-        this.warehouse = warehouse;
-        this.store = store;
-        orderItems = new LinkedList<>();
+    private List<OrderChange> orderChanges;
+    
+    public Order() {
+    	
     }
+    
+    public Order(LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> orderItems, List<OrderChange> orderChanges) {
+		super();
+		this.date = date;
+		this.price = price;
+		this.warehouse = warehouse;
+		this.store = store;
+		this.orderItems = orderItems;
+		this.orderChanges = orderChanges;
+	}
 
 
-    public int getId(){
-        return id;
-    }
 
-    public LocalDate getDate_created(){
-        return date_created;
-    }
-
-    public LocalDate getDate_delivered(){
-        return date_delivered;
-    }
-
-    public Status getStatus(){
-        return status;
-    }
-
-    public double getPrice(){
-        return price;
-    }
-
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
-
-    public Store getStore() {
-        return store;
-    }
-
-    public void setStore(Store store) {
-        this.store = store;
-    }
-
-    public void setDate_created(LocalDate date_created) {
-        this.date_created = date_created;
-    }
-
-    public void setDate_delivered(LocalDate date_delivered) {
-        this.date_delivered = date_delivered;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public void addOrderItem(OrderItem orderItem) {
-        orderItems.add(orderItem);
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
+	public Order(int id, LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> orderItems, List<OrderChange> orderChanges) {
+		super();
+		this.id = id;
+		this.date = date;
+		this.price = price;
+		this.warehouse = warehouse;
+		this.store = store;
+		this.orderItems = orderItems;
+		this.orderChanges = orderChanges;
+	}
+    
+    public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public LocalDate getDate() {
+		return date;
+	}
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
+	public Store getStore() {
+		return store;
+	}
+	public void setStore(Store store) {
+		this.store = store;
+	}
+	public List<OrderItem> getOrderItems() {
+		return orderItems;
+	}
+	public void setOrderItems(List<OrderItem> orderItems) {
+		this.orderItems = orderItems;
+	}
+	public List<OrderChange> getOrderChanges() {
+		return orderChanges;
+	}
+	public void setOrderChanges(List<OrderChange> orderChanges) {
+		this.orderChanges = orderChanges;
+	}
 
 }
 
