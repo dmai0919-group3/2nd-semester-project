@@ -7,19 +7,27 @@ import java.util.List;
 public class Order {
 
     private int id;
-    private LocalDate date_created;
-    private LocalDate date_delivered;
+    private LocalDate date;
     private Status status;
     private double price;
     private Warehouse warehouse;
+    /**
+     * Status is set based on newest order change
+     * This field is not stored in database
+     */
     private Store store;
     private List<OrderItem> orderItems;
 
-    public Order(int id, LocalDate date_created, LocalDate date_delivered, String status, double price, Warehouse warehouse, Store store){
+    public Order(Store store, Warehouse warehouse) {
+        this.store = store;
+        this.warehouse = warehouse;
+        orderItems = new LinkedList<>();
+    }
+
+    public Order(int id, LocalDate date, Status status, double price, Warehouse warehouse, Store store){
         this.id = id;
-        this.date_created = date_created;
-        this.date_delivered = date_delivered;
-        this.status = Status.PENDING;
+        this.date = date;
+        this.status = status;
         this.price = price;
         this.warehouse = warehouse;
         this.store = store;
@@ -31,12 +39,8 @@ public class Order {
         return id;
     }
 
-    public LocalDate getDate_created(){
-        return date_created;
-    }
-
-    public LocalDate getDate_delivered(){
-        return date_delivered;
+    public LocalDate getDate(){
+        return date;
     }
 
     public Status getStatus(){
@@ -63,12 +67,8 @@ public class Order {
         this.store = store;
     }
 
-    public void setDate_created(LocalDate date_created) {
-        this.date_created = date_created;
-    }
-
-    public void setDate_delivered(LocalDate date_delivered) {
-        this.date_delivered = date_delivered;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public void setStatus(Status status) {
@@ -79,8 +79,12 @@ public class Order {
         this.price = price;
     }
 
-    public void addOrderItem(OrderItem orderItem) {
-        orderItems.add(orderItem);
+    public boolean addOrderItem(OrderItem orderItem) {
+        return orderItems.add(orderItem);
+    }
+
+    public boolean removeOrderItem(OrderItem orderItem) {
+        return orderItems.remove(orderItem);
     }
 
     public List<OrderItem> getOrderItems() {
