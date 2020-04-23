@@ -86,8 +86,26 @@ public class OrderDB implements DBInterface<Order> {
 
 	@Override
 	public int update(Order value) {
-		// TODO Auto-generated method stub
-		return 0;
+		String query = "UPDATE 'Order' SET (storeID=?, warehouse=?, price=?, date=?) WHERE id=" + value.getId() + ";";
+		
+		int rows = -1;
+		try {
+			PreparedStatement s = db.getDBConn().prepareStatement(query);
+			
+			// TODO
+			/*
+			 * Match query with order model
+			 */
+			s.setInt(1, value.getStore().getId());
+			s.setInt(2, value.getWarehouse().getId());
+			s.setDouble(3, value.getPrice());
+			//s.setDate(4, value.getDate());
+			
+			rows = db.executeQuery(s.toString());
+		} catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+		return rows;
 	}
 
 	@Override
