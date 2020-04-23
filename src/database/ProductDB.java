@@ -56,6 +56,7 @@ public class ProductDB implements DBInterface<Product> {
         String query = "SELECT TOP 1 * FROM 'Product' WHERE id=?;";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setInt(1, id);
             ResultSet rs = db.executeSelect(s.toString());
             if (rs.next()) {
                 return new Product(
