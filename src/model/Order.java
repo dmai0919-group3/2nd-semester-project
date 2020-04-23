@@ -8,13 +8,13 @@ public class Order {
 
     private int id;
     private LocalDate date;
+    /**
+     * Status is set based on newest order change
+     * This field is not stored in order table
+     */
     private Status status;
     private double price;
     private Warehouse warehouse;
-    /**
-     * Status is set based on newest order change
-     * This field is not stored in database
-     */
     private Store store;
     private List<OrderItem> orderItems;
 
@@ -33,7 +33,6 @@ public class Order {
         this.store = store;
         orderItems = new LinkedList<>();
     }
-
 
     public int getId(){
         return id;

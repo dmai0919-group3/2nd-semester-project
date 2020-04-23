@@ -9,19 +9,21 @@ public class Product {
     private String name;
     private int weight;
     private double price;
-    private int minQuantity;
-    private List<Stock> stock;
 
-    public Product(int id, String name, int weight, Double price, int minQuantity)
+    public Product(int id, String name, int weight, Double price)
     {
         this.id = id;
         this.name = name;
         this.weight = weight;
         this.price = price;
-        this.minQuantity = minQuantity;
-        stock = new LinkedList<Stock>();
     }
 
+    public Product(String name, int weight, Double price)
+    {
+        this.name = name;
+        this.weight = weight;
+        this.price = price;
+    }
 
     public int getId(){
         return id;
@@ -51,20 +53,5 @@ public class Product {
         this.price = price;
     }
 
-    public int getMinQuantity() {
-        return minQuantity;
-    }
-
-    public void setMinQuantity(int minQuantity) {
-        this.minQuantity = minQuantity;
-    }
-
-    public void addStock(Stock stock) {
-        this.stock.add(stock);
-    }
-
-    public List<Stock> getStock() {
-        return stock;
-    }
 }
 

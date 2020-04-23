@@ -3,21 +3,13 @@ package model;
 public class WarehouseOrderItem {
 
     private int quantity;
-    private Status status;
+    private double unitPrice;
     private Product product;
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public WarehouseOrderItem(int quantity, Status status, Product product)
+    public WarehouseOrderItem(int quantity, double unitPrice, Product product)
     {
         this.quantity = quantity;
-        this.status = status;
+        this.unitPrice = unitPrice;
         this.product = product;
     }
 
@@ -25,16 +17,24 @@ public class WarehouseOrderItem {
         return quantity;
     }
 
-    public Status getStatus(){
-        return status;
-    }
-
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
 }
