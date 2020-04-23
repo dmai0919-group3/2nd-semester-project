@@ -7,5 +7,5 @@ public enum Status {
     PROCESSING,
     PROCESSED,
     IN_TRANSIT,
-    DEIVERED
+    DELIVERED
 }
