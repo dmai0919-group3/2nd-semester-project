@@ -155,7 +155,17 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
      * @see DBConnection executeQuery()
      */
     @Override
-    public int delete(StoreStockReport value) {
-        return 0;
+    public int delete(StoreStockReport value) throws DataAccessException {
+        // Because of the tables cascade rule, we dont need to have separate stock query
+        String query = "DELETE FROM 'StoreStockReport' WHERE id=?";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setInt(1, value.getId());
+            return db.executeQuery(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
+
     }
 }
