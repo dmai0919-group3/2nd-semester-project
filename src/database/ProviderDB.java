@@ -97,7 +97,18 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      */
     @Override
     public int update(Provider value) {
-        return 0;
+        String queryProduct = "UPDATE 'Provider' SET (name=?, email=?, available=?) WHERE id=" + value.getId() + ";";
+        int rows = -1;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryProduct);
+            s.setString(1, value.getName());
+            s.setString(2, value.getEmail());
+            s.setBoolean(3, value.getAvailable());
+            rows = db.executeQuery(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return rows;
     }
 
     /**
@@ -109,6 +120,14 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      */
     @Override
     public int delete(Provider value) {
-        return 0;
+        String query = "DELETE FROM 'Provider' WHERE id=?";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setInt(1, value.getId());
+            return db.executeQuery(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return -1;
     }
 }
