@@ -18,7 +18,7 @@ public class UserDB implements DBInterface<User>{
      * @see DBConnection executeInsertWithID() method
      */
     @Override
-    public int create(User value) {
+    public int create(User value) throws DataAccessException {
         String queryStore = "INSERT INTO 'Store' ('name', 'email', 'password', 'addressID') VALUES (?, ?, ?, ?);";
         String queryWarehouse = "INSERT INTO 'Warehouse' ('name', 'email', 'password', 'addressID') VALUES (?, ?, ?, ?);";
         AddressDB addressDB = new AddressDB();
@@ -38,8 +38,8 @@ public class UserDB implements DBInterface<User>{
             return db.executeInsertWithID(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-        return -1;
     }
 
     /**
@@ -50,7 +50,7 @@ public class UserDB implements DBInterface<User>{
      * @see DBConnection executeSelect() method
      */
     @Override
-    public User selectByID(int id) {
+    public User selectByID(int id) throws DataAccessException {
         String queryStore = "SELECT TOP 1 * FROM 'Store' WHERE id=?";
         String queryWarehouse = "SELECT TOP 1 * FROM 'Warehouse' WHERE id=?";
         try {
@@ -82,6 +82,7 @@ public class UserDB implements DBInterface<User>{
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return null;
     }
@@ -95,7 +96,7 @@ public class UserDB implements DBInterface<User>{
      * @see DBConnection executeSelect() method
      */
     @Override
-    public ResultSet selectByString(String column, String value) {
+    public ResultSet selectByString(String column, String value) throws DataAccessException {
         String queryStore = "SELECT * FROM 'Store' WHERE ?=?";
         String queryWarehouse = "SELECT * FROM 'Warehouse' WHERE ?=?";
         ResultSet rs;
@@ -115,8 +116,8 @@ public class UserDB implements DBInterface<User>{
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-        return null;
     }
 
     /**
@@ -127,7 +128,7 @@ public class UserDB implements DBInterface<User>{
      * @see DBConnection executeQuery() method
      */
     @Override
-    public int update(User value) {
+    public int update(User value) throws DataAccessException {
         String queryStore = "UPDATE 'Store' SET (name=?, email=?, password=?);";
         String queryWarehouse = "UPDATE 'Warehouse' SET (name=?, email=?, password=?);";
         PreparedStatement s;
@@ -146,6 +147,7 @@ public class UserDB implements DBInterface<User>{
             rows += addressDB.update(value.getAddress());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return rows;
     }
@@ -158,7 +160,7 @@ public class UserDB implements DBInterface<User>{
      * @see DBConnection executeQuery()
      */
     @Override
-    public int delete(User value) {
+    public int delete(User value) throws DataAccessException {
         String queryStore = "DELETE FROM 'Store' WHERE id=?;";
         String queryWarehouse = "DELETE FROM 'Warehouse' WHERE id=?;";
         PreparedStatement s;
@@ -173,6 +175,7 @@ public class UserDB implements DBInterface<User>{
             rows = db.executeQuery(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return rows;
     }

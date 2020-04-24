@@ -19,27 +19,18 @@ public class ProductDB implements DBInterface<Product> {
      * @see DBConnection executeInsertWithID() method
      */
     @Override
-    public int create(Product value) {
+    public int create(Product value) throws DataAccessException {
         String queryProd = "INSERT INTO 'Product' ('name', 'weight', 'price', 'minQuantity') VALUES (?, ? ,? , ?);";
-        String queryStock = "INSERT INTO 'Stock' ('product_id', 'warehouse_id', 'quantity') VALUES (?, ? ?);";
-        List<Stock> stockList = value.getStock();
         int productID = -1;
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryProd);
             s.setString(1, value.getName()); // name
             s.setInt(2, value.getWeight()); // weight
             s.setDouble(3, value.getPrice()); // price
-            s.setInt(4, value.getMinQuantity()); // minQuantity
             productID = db.executeInsertWithID(s.toString());
-            for (Stock stock : stockList) {
-                s = db.getDBConn().prepareStatement(queryStock);
-                s.setInt(1, productID);
-                s.setInt(2, stock.getWarehouse().getId());
-                s.setInt(3, stock.getQuantity());
-                db.executeInsertWithID(s.toString());
-            }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return productID;
     }
@@ -52,7 +43,7 @@ public class ProductDB implements DBInterface<Product> {
      * @see DBConnection executeSelect() method
      */
     @Override
-    public Product selectByID(int id) {
+    public Product selectByID(int id) throws DataAccessException {
         String query = "SELECT TOP 1 * FROM 'Product' WHERE id=?;";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
@@ -63,12 +54,12 @@ public class ProductDB implements DBInterface<Product> {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getInt("weight"),
-                        rs.getDouble("price"),
-                        rs.getInt("minQuantity"));
+                        rs.getDouble("price"));
             }
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return null;
     }
@@ -103,26 +94,18 @@ public class ProductDB implements DBInterface<Product> {
      * @see DBConnection executeQuery() method
      */
     @Override
-    public int update(Product value) {
+    public int update(Product value) throws DataAccessException {
         String queryProduct = "UPDATE 'Product' SET (name=?, weight=?, price=?, minQuantity=?) WHERE id=" + value.getId() + ";";
-        String queryStock = "UPDATE 'Stock' SET (quantity=?) WHERE product_id=" + value.getId() + " AND warehouse_id=?;";
-        List<Stock> stockList = value.getStock();
         int rows = -1;
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryProduct);
             s.setString(1, value.getName());
             s.setInt(2, value.getWeight());
             s.setDouble(3, value.getPrice());
-            s.setInt(4, value.getMinQuantity());
             rows = db.executeQuery(s.toString());
-            for (Stock stock : stockList) {
-                s = db.getDBConn().prepareStatement(queryStock);
-                s.setInt(1, stock.getQuantity());
-                s.setInt(2, stock.getWarehouse().getId());
-                rows += db.executeQuery(s.toString());
-            }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return rows;
     }
@@ -135,7 +118,7 @@ public class ProductDB implements DBInterface<Product> {
      * @see DBConnection executeQuery()
      */
     @Override
-    public int delete(Product value) {
+    public int delete(Product value) throws DataAccessException {
         // Because of the tables cascade rule, we dont need to have separate stock query
         String query = "DELETE FROM 'Product' WHERE id=?";
         try {
@@ -144,7 +127,7 @@ public class ProductDB implements DBInterface<Product> {
             return db.executeQuery(s.toString());
         } catch (SQLException e) {
              System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-        return -1;
     }
 }

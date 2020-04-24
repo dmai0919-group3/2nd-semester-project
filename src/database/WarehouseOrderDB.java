@@ -1,9 +1,6 @@
 package database;
 
-import java.sql.Date;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.time.LocalDate;
 
 import database.DBConnection;
@@ -25,7 +22,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
-    public int create(WarehouseOrder value) {
+    public int create(WarehouseOrder value) throws DataAccessException {
         DBConnection dbConn = DBConnection.getInstance();
         Connection con = dbConn.getDBConn();
 
@@ -41,8 +38,9 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 	        
 	        String query = "";
 	        resultId = dbConn.executeQuery(query);
-        }
-        catch (Exception e) {
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
 
 
@@ -55,7 +53,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @return the single WarehouseOrder with the given ID
      * @see DBConnection executeSelect() method
      */
-    public WarehouseOrder selectByID(int id) {
+    public WarehouseOrder selectByID(int id) throws DataAccessException {
         DBConnection dbConn = DBConnection.getInstance();
         Connection con = dbConn.getDBConn();
 
@@ -78,8 +76,9 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 	        
 	        Warehouse warehouse = null;
 	        result = new WarehouseOrder(rs.getInt("id"), rs.getDate("date").toLocalDate(), rs.getString("status"), warehouse);
-        }
-        catch (Exception e) {
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
 
         return result;
@@ -92,7 +91,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @return the ResultSet containing all the results of the query
      * @see DBConnection executeSelect() method
      */
-    public ResultSet selectByString(String column, String value) {
+    public ResultSet selectByString(String column, String value) throws DataAccessException {
         DBConnection dbConn = DBConnection.getInstance();
         Connection con = dbConn.getDBConn();
 
@@ -109,9 +108,10 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 	
 	        String query = "";
 	        rs = dbConn.executeSelect(query);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-    	catch (Exception e) {
-    	}
         
         return rs;
     }
@@ -122,7 +122,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @return the number of rows affected by the update
      * @see DBConnection executeQuery() method
      */
-    public int update(WarehouseOrder value) {
+    public int update(WarehouseOrder value) throws DataAccessException {
         DBConnection dbConn = DBConnection.getInstance();
         Connection con = dbConn.getDBConn();
 
@@ -140,9 +140,10 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 	
 	        String query = "";
 	        resultId = dbConn.executeQuery(query);
-	    }
-		catch (Exception e) {
-		}
+	    } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
 	    
         return resultId;
     }
@@ -153,7 +154,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @return the number of rows deleted from the table
      * @see DBConnection executeQuery()
      */
-    public int delete(WarehouseOrder value) {
+    public int delete(WarehouseOrder value) throws DataAccessException {
         DBConnection dbConn = DBConnection.getInstance();
         Connection con = dbConn.getDBConn();
 
@@ -169,9 +170,10 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 	
 	        String query = "";
 	        result = dbConn.executeQuery(query);
-	    }
-		catch (Exception e) {
-		}
+	    } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
 		
         return result;
     }

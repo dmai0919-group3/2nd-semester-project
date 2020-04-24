@@ -17,7 +17,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      * @see DBConnection executeInsertWithID() method
      */
     @Override
-    public int create(Provider value) {
+    public int create(Provider value) throws DataAccessException {
         String query = "INSERT INTO 'Provider' ('name', 'email','available', 'addressID') VALUES (?, ?, ?, ?)";
         AddressDB addressDB = new AddressDB();
         int addressID = addressDB.create(value.getAddress());
@@ -31,6 +31,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
             providerID = db.executeInsertWithID(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return providerID;
     }
@@ -43,7 +44,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      * @see DBConnection executeSelect() method
      */
     @Override
-    public Provider selectByID(int id) {
+    public Provider selectByID(int id) throws DataAccessException {
         String query = "SELECT TOP 1 * FROM 'Provider' WHERE id=?;";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
@@ -61,6 +62,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
 
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return null;
     }
@@ -74,7 +76,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      * @see DBConnection executeSelect() method
      */
     @Override
-    public ResultSet selectByString(String column, String value) {
+    public ResultSet selectByString(String column, String value) throws DataAccessException {
         String query = "SELECT * FROM 'Provider' WHERE ?=?";
         ResultSet rs;
         try {
@@ -84,8 +86,8 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
             return db.executeSelect(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-        return null;
     }
 
     /**
@@ -96,7 +98,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      * @see DBConnection executeQuery() method
      */
     @Override
-    public int update(Provider value) {
+    public int update(Provider value) throws DataAccessException {
         String queryProduct = "UPDATE 'Provider' SET (name=?, email=?, available=?) WHERE id=" + value.getId() + ";";
         int rows = -1;
         try {
@@ -107,6 +109,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
             rows = db.executeQuery(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
         return rows;
     }
@@ -119,7 +122,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      * @see DBConnection executeQuery()
      */
     @Override
-    public int delete(Provider value) {
+    public int delete(Provider value) throws DataAccessException {
         String query = "DELETE FROM 'Provider' WHERE id=?";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
@@ -127,7 +130,7 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
             return db.executeQuery(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
+            throw new DataAccessException();
         }
-        return -1;
     }
 }

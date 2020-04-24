@@ -15,7 +15,7 @@ public interface DBInterface<T> {
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
-    int create(T value);
+    int create(T value) throws DataAccessException;
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
@@ -23,7 +23,7 @@ public interface DBInterface<T> {
      * @return the single object with the given ID
      * @see DBConnection executeSelect() method
      */
-    T selectByID(int id);
+    T selectByID(int id) throws DataAccessException;
 
     /**
      * This method takes a column name and a search value, converts it to a valid SQL SELECT query, which is the executed
@@ -32,7 +32,7 @@ public interface DBInterface<T> {
      * @return the ResultSet containing all the results of the query
      * @see DBConnection executeSelect() method
      */
-    ResultSet selectByString(String column, String value);
+    ResultSet selectByString(String column, String value) throws DataAccessException;
 
     /**
      * This method takes an object and converts it to a valid SQL UPDATE query, which is the executed
@@ -40,7 +40,7 @@ public interface DBInterface<T> {
      * @return the number of rows affected by the update
      * @see DBConnection executeQuery() method
      */
-    int update(T value);
+    int update(T value) throws DataAccessException;
 
     /**
      * This method takes an object and converts it to a valid SQL DELETE query, which is the executed
@@ -48,5 +48,5 @@ public interface DBInterface<T> {
      * @return the number of rows deleted from the table
      * @see DBConnection executeQuery()
      */
-    int delete(T value);
+    int delete(T value) throws DataAccessException;
 }
