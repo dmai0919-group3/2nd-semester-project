@@ -39,7 +39,7 @@ public class Order {
         return id;
     }
 
-    public LocalDate getDate(){
+    public Date getDate(){
         return date;
     }
 

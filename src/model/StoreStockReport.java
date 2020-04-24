@@ -30,7 +30,7 @@ public class StoreStockReport {
         return id;
     }
 
-    public Date getDate(){
+    public java.sql.Date getDate(){
         return date;
     }
 

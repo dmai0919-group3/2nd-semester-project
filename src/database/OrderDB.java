@@ -30,6 +30,7 @@ public class OrderDB implements DBInterface<Order> {
 			s.setDate(4, value.getDate());
 			
 			orderID = db.executeInsertWithID(query);
+			s.close();
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 		}

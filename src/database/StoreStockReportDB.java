@@ -18,7 +18,7 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
      * Given a valid StockReport object which doesn't exist in the database, it inserts it into the DB
-     * @param value it's the given T type object (in this case StockRepoort)
+     * @param value it's the given T type object (in this case StockReport)
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
@@ -68,6 +68,7 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
             s = db.getDBConn().prepareStatement(queryItem);
             s.setInt(1, id);
             ResultSet rsItem = db.executeSelect(s.toString());
+            s.close();
             while (rsItem.next()) {
                 items.add(new StoreStockReportItem(
                         productDB.selectByID(rsItem.getInt("productID")),
@@ -122,8 +123,28 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
      * @see DBConnection executeQuery() method
      */
     @Override
-    public int update(StoreStockReport value) {
-        return 0;
+    public int update(StoreStockReport value) throws DataAccessException {
+        String queryReport = "UPDATE 'StoreStockReport' SET (date=?, note=?) WHERE id=? AND storeID=?;";
+        String queryItem = "UPDATE 'StoreStockReportItem' SET (quantity=?) WHERE stpreStockReportID=?;";
+        int rows = -1;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
+            s.setDate(1, value.getDate());
+            s.setString(2, value.getNote());
+            s.setInt(3, value.getId());
+            s.setInt(4, value.getStore().getId());
+            rows = db.executeQuery(s.toString());
+            for (StoreStockReportItem item : value.getItems()) {
+                s = db.getDBConn().prepareStatement(queryItem);
+                s.setInt(1, item.getQuantity());
+                s.setInt(2, value.getId());
+                rows += db.executeQuery(s.toString());
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
+        return rows;
     }
 
     /**
