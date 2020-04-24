@@ -1,21 +1,44 @@
 package database;
 
 import model.StockReport;
+import model.StockReportItem;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class StockReportDB implements DBInterface<StockReport> { // TODO METHODS NOT IMPLEMENTED!!!
+public class StockReportDB implements DBInterface<StockReport> {
+    DBConnection db = DBConnection.getInstance();
 
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
-     *
-     * @param value it's the given T type object
+     * Given a valid StockReport object which doesn't exist in the database, it inserts it into the DB
+     * @param value it's the given T type object (in this case StockRepoort)
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
     @Override
-    public int create(StockReport value) {
-        return 0;
+    public int create(StockReport value) throws DataAccessException {
+        String queryReport = "INSERT INTO 'StockReport' ('storeID, date, note') VALUES (?, ?, ?);";
+        String queryItem = "INSERT INTO 'StockReportItem' (stockReportID, quantity, productID) VALUES (?, ?, ?);";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
+            s.setInt(1, value.getStore().getId());
+            s.setDate(2, value.getDate());
+            s.setString(3, value.getNote());
+            int id = db.executeInsertWithID(s.toString());
+            for (StockReportItem item : value.getItems()) {
+                s = db.getDBConn().prepareStatement(queryItem);
+                s.setInt(1, id);
+                s.setInt(2, item.getQuantity());
+                s.setInt(3, item.getProduct().getId());
+                db.executeInsertWithID(s.toString());
+            }
+            return id;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
     }
 
     /**

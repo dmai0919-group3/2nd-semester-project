@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IMPLEMENTED!!!
+public class ProviderDB implements DBInterface<Provider>{
     DBConnection db = DBConnection.getInstance();
 
     /**

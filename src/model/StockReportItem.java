@@ -10,11 +10,11 @@ public class StockReportItem {
         this.quantity = quantity;
     }
 
-    public int getAmount(){
+    public int getQuantity(){
         return quantity;
     }
 
-    public void setAmount(int quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 

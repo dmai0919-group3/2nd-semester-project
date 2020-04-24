@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class StockReport {
         return id;
     }
 
-    public LocalDate getDate(){
+    public Date getDate(){
         return date;
     }
 
