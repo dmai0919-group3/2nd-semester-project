@@ -1,25 +1,33 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
 public class WarehouseOrder {
 
     private int id;
     private LocalDate date;
-    private String status;
+    private Status status;
     private Warehouse warehouse;
     private Provider provider;
     private List<WarehouseOrderItem> items;
 
-    public WarehouseOrder(int id, LocalDate date, String status, Warehouse warehouse)
+    public WarehouseOrder(int id, LocalDate date, Status status, Warehouse warehouse, Provider provider, List<WarehouseOrderItem> items)
     {
         this.id = id;
         this.date = date;
         this.status = status;
         this.warehouse = warehouse;
-        items = new LinkedList<>();
+        this.provider = provider;
+        this.items = items;
+    }
+
+    public WarehouseOrder(LocalDate date, Status status, Warehouse warehouse, Provider provider, List<WarehouseOrderItem> items) {
+        this.date = date;
+        this.status = status;
+        this.warehouse = warehouse;
+        this.provider = provider;
+        this.items = items;
     }
 
     public int getId(){
@@ -30,7 +38,7 @@ public class WarehouseOrder {
         return date;
     }
 
-    public String getStatus(){
+    public Status getStatus(){
         return status;
     }
 
@@ -38,7 +46,7 @@ public class WarehouseOrder {
         this.date = date;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

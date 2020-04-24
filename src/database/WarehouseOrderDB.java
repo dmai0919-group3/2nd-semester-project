@@ -4,11 +4,12 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import database.DBInterface;
+import java.util.ArrayList;
+import model.Status;
 import model.WarehouseOrder;
 import model.Warehouse;
 
+//TODO: Fix all methods
 /**
  * This class is used in connection with the DAO pattern
  */
@@ -33,7 +34,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 
             s.setString(1, WarehouseOrderDB.tableName);
             s.setDate(2, Date.valueOf(value.getDate()));
-            s.setString(3, value.getStatus());
+            s.setString(3, value.getStatus().toString());
 
             resultID = db.executeInsertWithID(s.toString());
         } catch (SQLException e) {
@@ -52,20 +53,24 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
     public WarehouseOrder selectByID(int id) throws DataAccessException {
         String query = "SELECT TOP 1 * FROM '?' WHERE id=?;";
 
-        Warehouse warehouse = null; // TODO see how to retrieve warehouse
         try {
 	        PreparedStatement s = db.getDBConn().prepareStatement(query);
 	        s.setString(1, WarehouseOrderDB.tableName);
 	        s.setInt(2, id);
 
 	        ResultSet rs = db.executeSelect(s.toString());
+
 	
             if (rs.first()) {
+                UserDB userDB = new UserDB();
+                ProviderDB providerDB = new ProviderDB();
                 return new WarehouseOrder (
                         rs.getInt("id"),
                         rs.getDate("date").toLocalDate(),
-                        rs.getString("status"),
-                        warehouse);
+                        Status.valueOf(rs.getString("status")),
+                        (Warehouse) userDB.selectByID(rs.getInt("warehouseID")),
+                        providerDB.selectByID(rs.getInt("providerDB")),
+                        new ArrayList<>());
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -112,7 +117,7 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
 
 	        s.setString(1, WarehouseOrderDB.tableName);
 	        s.setDate(2, Date.valueOf(value.getDate()));
-	        s.setString(3, value.getStatus());
+	        s.setString(3, value.getStatus().toString());
 	        s.setInt(4, value.getId());
             
             rows = db.executeQuery(s.toString());

@@ -159,6 +159,7 @@ CREATE TABLE [WarehouseOrder]
 (
  [id]          int NOT NULL ,
  [date]        datetime2(7) NOT NULL ,
+ [status]      varchar NOT NULL ,
  [providerID]  int NOT NULL ,
  [warehouseID] int NOT NULL ,
 
