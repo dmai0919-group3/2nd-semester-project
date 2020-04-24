@@ -124,7 +124,7 @@ CREATE TABLE [OrderStatus]
 );
 GO
 
-CREATE TABLE [StockReport]
+CREATE TABLE [StoreStockReport]
 (
  [id]      int NOT NULL ,
  [storeID] int NOT NULL ,
@@ -132,25 +132,25 @@ CREATE TABLE [StockReport]
  [note]    varchar(256) NOT NULL ,
 
 
- CONSTRAINT [PK_StockReport] PRIMARY KEY CLUSTERED ([id] ASC),
+ CONSTRAINT [PK_StoreStockReport] PRIMARY KEY CLUSTERED ([id] ASC),
  CONSTRAINT [FK_156] FOREIGN KEY ([storeID])  REFERENCES [Store]([id]) ON DELETE CASCADE ON UPDATE CASCADE
 );
 GO
-CREATE NONCLUSTERED INDEX [fkIdx_156] ON [StockReport] 
+CREATE NONCLUSTERED INDEX [fkIdx_156] ON StoreStockReport
  (
   [storeID] ASC
  );
 GO
 
-CREATE TABLE [StockReportItem]
+CREATE TABLE [StoreStockReportItem]
 (
- [stockReportID] int NOT NULL ,
+ [storeStockReportID] int NOT NULL ,
  [quantity]      int NOT NULL ,
  [productID]     int NOT NULL ,
 
 
- CONSTRAINT [PK_StockReportItem] PRIMARY KEY CLUSTERED ([stockReportID] ASC, [productID] ASC),
- CONSTRAINT [FK_162] FOREIGN KEY ([stockReportID])  REFERENCES [StockReport]([id]) ON DELETE CASCADE ON UPDATE CASCADE,
+ CONSTRAINT [PK_StoreStockReportItem] PRIMARY KEY CLUSTERED ([storeStockReportID] ASC, [productID] ASC),
+ CONSTRAINT [FK_162] FOREIGN KEY ([storeStockReportID])  REFERENCES StoreStockReport([id]) ON DELETE CASCADE ON UPDATE CASCADE,
  CONSTRAINT [FK_166] FOREIGN KEY ([productID])  REFERENCES [Product]([id]) ON DELETE CASCADE ON UPDATE CASCADE
 );
 GO

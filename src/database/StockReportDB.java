@@ -1,13 +1,13 @@
 package database;
 
-import model.StockReport;
-import model.StockReportItem;
+import model.StoreStockReport;
+import model.StoreStockReportItem;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StockReportDB implements DBInterface<StockReport> {
+public class StockReportDB implements DBInterface<StoreStockReport> {
     DBConnection db = DBConnection.getInstance();
 
     /**
@@ -18,16 +18,16 @@ public class StockReportDB implements DBInterface<StockReport> {
      * @see DBConnection executeInsertWithID() method
      */
     @Override
-    public int create(StockReport value) throws DataAccessException {
-        String queryReport = "INSERT INTO 'StockReport' ('storeID, date, note') VALUES (?, ?, ?);";
-        String queryItem = "INSERT INTO 'StockReportItem' (stockReportID, quantity, productID) VALUES (?, ?, ?);";
+    public int create(StoreStockReport value) throws DataAccessException {
+        String queryReport = "INSERT INTO 'StoreStockReport' (storeID, date, note) VALUES (?, ?, ?);";
+        String queryItem = "INSERT INTO 'StoreStockReportItem' (stockReportID, quantity, productID) VALUES (?, ?, ?);";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
             s.setInt(1, value.getStore().getId());
             s.setDate(2, value.getDate());
             s.setString(3, value.getNote());
             int id = db.executeInsertWithID(s.toString());
-            for (StockReportItem item : value.getItems()) {
+            for (StoreStockReportItem item : value.getItems()) {
                 s = db.getDBConn().prepareStatement(queryItem);
                 s.setInt(1, id);
                 s.setInt(2, item.getQuantity());
@@ -49,7 +49,7 @@ public class StockReportDB implements DBInterface<StockReport> {
      * @see DBConnection executeSelect() method
      */
     @Override
-    public StockReport selectByID(int id) {
+    public StoreStockReport selectByID(int id) {
         return null;
     }
 
@@ -74,7 +74,7 @@ public class StockReportDB implements DBInterface<StockReport> {
      * @see DBConnection executeQuery() method
      */
     @Override
-    public int update(StockReport value) {
+    public int update(StoreStockReport value) {
         return 0;
     }
 
@@ -86,7 +86,7 @@ public class StockReportDB implements DBInterface<StockReport> {
      * @see DBConnection executeQuery()
      */
     @Override
-    public int delete(StockReport value) {
+    public int delete(StoreStockReport value) {
         return 0;
     }
 }

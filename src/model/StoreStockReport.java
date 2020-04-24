@@ -4,15 +4,15 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
-public class StockReport {
+public class StoreStockReport {
 
     private int id;
     private LocalDate date;
     private String note;
     private Store store;
-    private List<StockReportItem> items;
+    private List<StoreStockReportItem> items;
 
-    public StockReport(int id, LocalDate date, String note, Store store, List<StockReportItem> items) {
+    public StoreStockReport(int id, LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
         this.id = id;
         this.date = date;
         this.note = note;
@@ -20,7 +20,7 @@ public class StockReport {
         this.items = items;
     }
 
-    public StockReport(LocalDate date, String note, Store store, List<StockReportItem> items) {
+    public StoreStockReport(LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
         this.date = date;
         this.note = note;
         this.store = store;
@@ -55,15 +55,15 @@ public class StockReport {
         this.store = store;
     }
 
-    public void addItem(StockReportItem item) {
+    public void addItem(StoreStockReportItem item) {
         items.add(item);
     }
 
-    public List<StockReportItem> getItems() {
+    public List<StoreStockReportItem> getItems() {
         return items;
     }
 
-    public void setItems(List<StockReportItem> items) {
+    public void setItems(List<StoreStockReportItem> items) {
         this.items = items;
     }
 }
