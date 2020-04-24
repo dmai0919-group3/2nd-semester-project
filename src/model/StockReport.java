@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
-public class StoreStockReport {
+public class StockReport {
 
     private int id;
     private LocalDate date;
     private String note;
-    private List<StoreStockReportItem> items;
+    private List<StockReportItem> items;
 
-    public StoreStockReport(int id, LocalDate date, String note) {
+    public StockReport(int id, LocalDate date, String note) {
         this.id = id;
         this.date = date;
         this.note = note;
@@ -40,10 +40,10 @@ public class StoreStockReport {
         this.note = note;
     }
 
-    public void addItem(StoreStockReportItem item) {
+    public void addItem(StockReportItem item) {
         items.add(item);
     }
-    public List<StoreStockReportItem> getItems() {
+    public List<StockReportItem> getItems() {
         return items;
     }
 

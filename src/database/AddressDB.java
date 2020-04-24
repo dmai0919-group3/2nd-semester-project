@@ -40,12 +40,13 @@ public class AddressDB implements DBInterface<Address> {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
-        return resultID;
+        return 0;
     }
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
      * Given an ID this method returns a single Address which has the given ID
+     *
      * @param id is the ID which we want to search for in the database
      * @return the single object with the given ID
      * @see DBConnection executeSelect() method
@@ -78,9 +79,10 @@ public class AddressDB implements DBInterface<Address> {
     /**
      * This method takes a column name and a search value, converts it to a valid SQL SELECT query, which is the executed
      * Given a column (Address name) and a value it finds all the products which name contains the given value
-     * @param column the columns name we want to search in, in this case the name of the Address
+     *
+     * @param column the columns name we want to search in
      * @param value  the value we want to search for
-     * @return the ResultSet containing all the results of the query, null if there's an error and an empty ResultSet if there are 0 results
+     * @return the ResultSet containing all the results of the query
      * @see DBConnection executeSelect() method
      */
     @Override
@@ -104,6 +106,7 @@ public class AddressDB implements DBInterface<Address> {
      * This method takes an object and converts it to a valid SQL UPDATE query, which is the executed
      * Given a Address which exists in the DB, it updates it's details in the DB
      * @param value it's the given T type object (in this case Address)
+     *
      * @return the number of rows affected by the update
      * @see DBConnection executeQuery() method
      */
@@ -129,6 +132,7 @@ public class AddressDB implements DBInterface<Address> {
             System.err.println(e.getMessage());
         }
         return rows;
+        return 0;
     }
 
     /**
