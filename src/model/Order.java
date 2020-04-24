@@ -1,7 +1,6 @@
 package model;
 
-import java.sql.Date;
-import  java.time.LocalDate;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,22 +16,23 @@ public class Order {
     private double price;
     private Warehouse warehouse;
     private Store store;
-    private List<OrderItem> items;
+    private List<OrderItem> orderItems;
+    private List<OrderRevision> orderRevisions;
 
     public Order(Store store, Warehouse warehouse) {
         this.store = store;
         this.warehouse = warehouse;
-        items = new LinkedList<>();
+        orderItems = new LinkedList<>();
     }
 
-    public Order(int id, Date date, List<OrderStatus> status, double price, Warehouse warehouse, Store store){
+    public Order(int id, LocalDate date, double price, Warehouse warehouse, Store store, List<OrderItem> orderItems, List<OrderRevision> orderRevisions){
         this.id = id;
         this.date = date;
-        this.status = status;
         this.price = price;
         this.warehouse = warehouse;
         this.store = store;
-        items = new LinkedList<>();
+        this.orderItems = orderItems;
+        this.orderRevisions = orderRevisions;
     }
 
     public int getId(){
