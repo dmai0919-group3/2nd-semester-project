@@ -2,9 +2,13 @@ package database;
 
 import model.Provider;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IMPLEMENTED!!!
+    DBConnection db = DBConnection.getInstance();
+
     /**
      * This method takes an object and converts it to a valid SQL INSERT query, which is the executed
      *
@@ -14,7 +18,21 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      */
     @Override
     public int create(Provider value) {
-        return 0;
+        String query = "INSERT INTO 'Provider' ('name', 'email','available', 'addressID') VALUES (?, ?, ?, ?)";
+        AddressDB addressDB = new AddressDB();
+        int addressID = addressDB.create(value.getAddress());
+        int providerID = -1;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setString(1, value.getName());
+            s.setString(2, value.getEmail());
+            s.setBoolean(3, value.getAvailable());
+            s.setInt(4, addressID);
+            providerID = db.executeInsertWithID(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return providerID;
     }
 
     /**
@@ -26,6 +44,24 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      */
     @Override
     public Provider selectByID(int id) {
+        String query = "SELECT TOP 1 * FROM 'Provider' WHERE id=?;";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setInt(1, id);
+            ResultSet rs = db.executeSelect(s.toString());
+            AddressDB addressDB = new AddressDB();
+            if (rs.next()) {
+                return new Provider(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getBoolean("available"),
+                        addressDB.selectByID(rs.getInt("addressID")));
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 
@@ -39,6 +75,16 @@ public class ProviderDB implements DBInterface<Provider>{ // TODO METHODS NOT IM
      */
     @Override
     public ResultSet selectByString(String column, String value) {
+        String query = "SELECT * FROM 'Provider' WHERE ?=?";
+        ResultSet rs;
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+            s.setString(1, column);
+            s.setString(2, value);
+            return db.executeSelect(s.toString());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 
