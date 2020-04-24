@@ -99,8 +99,19 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
      * @see DBConnection executeSelect() method
      */
     @Override
-    public ResultSet selectByString(String column, String value) {
-        return null;
+    public ResultSet selectByString(String column, String value) throws DataAccessException {
+        StoreStockReport report;
+        String queryReport = "SELECT * FROM 'StoreStockReport' WHERE ?=?";
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
+            s.setString(1, column);
+            s.setString(2, value);
+            ResultSet rsStore = db.executeSelect(s.toString());
+            return rsStore;
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
     }
 
     /**
