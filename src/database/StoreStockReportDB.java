@@ -1,13 +1,18 @@
 package database;
 
+import model.Product;
+import model.Store;
 import model.StoreStockReport;
 import model.StoreStockReportItem;
 
+import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
-public class StockReportDB implements DBInterface<StoreStockReport> {
+public class StoreStockReportDB implements DBInterface<StoreStockReport> {
     DBConnection db = DBConnection.getInstance();
 
     /**
@@ -20,7 +25,7 @@ public class StockReportDB implements DBInterface<StoreStockReport> {
     @Override
     public int create(StoreStockReport value) throws DataAccessException {
         String queryReport = "INSERT INTO 'StoreStockReport' (storeID, date, note) VALUES (?, ?, ?);";
-        String queryItem = "INSERT INTO 'StoreStockReportItem' (stockReportID, quantity, productID) VALUES (?, ?, ?);";
+        String queryItem = "INSERT INTO 'StoreStockReportItem' (storeStockReportID, quantity, productID) VALUES (?, ?, ?);";
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
             s.setInt(1, value.getStore().getId());
@@ -43,14 +48,46 @@ public class StockReportDB implements DBInterface<StoreStockReport> {
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
-     *
+     * Given an ID this method returns a single StoreStockReport which has the given ID
      * @param id is the ID which we want to search for in the database
      * @return the single object with the given ID
      * @see DBConnection executeSelect() method
      */
     @Override
-    public StoreStockReport selectByID(int id) {
-        return null;
+    public StoreStockReport selectByID(int id) throws DataAccessException {
+        StoreStockReport report;
+        String queryReport = "SELECT TOP 1 * FROM 'StoreStockReport' WHERE id=?";
+        String queryItem = "SELECT * FROM 'StoreStockReportItem' WHERE storeStockReportID=?;";
+        UserDB userDB = new UserDB();
+        ProductDB productDB = new ProductDB();
+        List<StoreStockReportItem> items = new LinkedList<>();
+        try {
+            PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
+            s.setInt(1, id);
+            ResultSet rsStore = db.executeSelect(s.toString());
+            s = db.getDBConn().prepareStatement(queryItem);
+            s.setInt(1, id);
+            ResultSet rsItem = db.executeSelect(s.toString());
+            while (rsItem.next()) {
+                items.add(new StoreStockReportItem(
+                        productDB.selectByID(rsItem.getInt("productID")),
+                        rsItem.getInt("quantity")
+                ));
+            }
+            if (rsStore.next()) {
+                report = new StoreStockReport(
+                        rsStore.getInt("id"),
+                        rsStore.getDate("date"),
+                        rsStore.getString("note"),
+                        (Store) userDB.selectByID(rsStore.getInt("date")),
+                        items
+                );
+                return report;
+            } else throw new DataAccessException("There are no reports with the given ID");
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new DataAccessException();
+        }
     }
 
     /**
