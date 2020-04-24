@@ -1,9 +1,10 @@
 package database;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import database.DBConnection;
 import database.DBInterface;
 import model.WarehouseOrder;
 import model.Warehouse;
@@ -12,8 +13,9 @@ import model.Warehouse;
  * This class is used in connection with the DAO pattern
  */
 public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
+    DBConnection db = DBConnection.getInstance();
 
-    private static String tableName = "warehouse";
+    private static String tableName = "WarehouseOrder";
 
 
     /**
@@ -23,29 +25,23 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @see DBConnection executeInsertWithID() method
      */
     public int create(WarehouseOrder value) throws DataAccessException {
-        DBConnection dbConn = DBConnection.getInstance();
-        Connection con = dbConn.getDBConn();
+        String query = "INSERT INTO ? (date, status) VALUES ? , ? ;";
 
-        String pstmtString = "INSERT INTO ? (date, status)";
-        pstmtString += "VALUES ? , ? ;";
-
-        int resultId = 0;
+        int resultID = -1;
         try {
-        	PreparedStatement pstmt = con.prepareStatement(pstmtString);
-	        pstmt.setString(1, WarehouseOrderDB.tableName);
-	        pstmt.setDate(2, Date.valueOf(value.getDate()));
-	        pstmt.setString(3, value.getStatus());
-	        
-	        String query = "";
-	        resultId = dbConn.executeQuery(query);
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+
+            s.setString(1, WarehouseOrderDB.tableName);
+            s.setDate(2, Date.valueOf(value.getDate()));
+            s.setString(3, value.getStatus());
+
+            resultID = db.executeInsertWithID(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new DataAccessException();
         }
-
-
-        return resultId;
-    }
+        return resultID;
+     }
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
@@ -54,34 +50,28 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @see DBConnection executeSelect() method
      */
     public WarehouseOrder selectByID(int id) throws DataAccessException {
-        DBConnection dbConn = DBConnection.getInstance();
-        Connection con = dbConn.getDBConn();
+        String query = "SELECT TOP 1 * FROM '?' WHERE id=?;";
 
-        String pstmtString = "SELECT id, date, status, warehouseOrder";
-        pstmtString += "FROM ?";
-        pstmtString += "WHERE id=?";
-
-        WarehouseOrder result = null;
+        Warehouse warehouse = null; // TODO see how to retrieve warehouse
         try {
-	        PreparedStatement pstmt = con.prepareStatement(pstmtString);
-	        pstmt.setString(1, WarehouseOrderDB.tableName);
-	        pstmt.setInt(2, id);
+	        PreparedStatement s = db.getDBConn().prepareStatement(query);
+	        s.setString(1, WarehouseOrderDB.tableName);
+	        s.setInt(2, id);
+
+	        ResultSet rs = db.executeSelect(s.toString());
 	
-	        String query = "";
-	        ResultSet rs = dbConn.executeSelect(query);
-	
-	        if (!rs.first()) {
-	            return null;
-	        }
-	        
-	        Warehouse warehouse = null;
-	        result = new WarehouseOrder(rs.getInt("id"), rs.getDate("date").toLocalDate(), rs.getString("status"), warehouse);
+            if (rs.first()) {
+                return new WarehouseOrder (
+                        rs.getInt("id"),
+                        rs.getDate("date").toLocalDate(),
+                        rs.getString("status"),
+                        warehouse);
+            }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new DataAccessException();
         }
-
-        return result;
+        return null;
     }
 
 	/**
@@ -92,28 +82,19 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @see DBConnection executeSelect() method
      */
     public ResultSet selectByString(String column, String value) throws DataAccessException {
-        DBConnection dbConn = DBConnection.getInstance();
-        Connection con = dbConn.getDBConn();
-
-        String pstmtString = "SELECT id, date, status, warehouseOrder";
-        pstmtString += "FROM ?";
-        pstmtString += "WHERE ? = ?";
-
-        ResultSet rs = null;
+        String query = "SELECT * FROM '?' WHERE ?=?;";
         try {
-	        PreparedStatement pstmt = con.prepareStatement(pstmtString);
-	        pstmt.setString(1, WarehouseOrderDB.tableName);
-	        pstmt.setString(2, column);
-	        pstmt.setString(3, value);
-	
-	        String query = "";
-	        rs = dbConn.executeSelect(query);
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+
+            s.setString(1, WarehouseOrderDB.tableName);
+            s.setString(2, column);
+            s.setString(3, value);
+
+            return db.executeSelect(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new DataAccessException();
         }
-        
-        return rs;
     }
 
     /**
@@ -123,29 +104,23 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @see DBConnection executeQuery() method
      */
     public int update(WarehouseOrder value) throws DataAccessException {
-        DBConnection dbConn = DBConnection.getInstance();
-        Connection con = dbConn.getDBConn();
-
-        String pstmtString = "UPDATE ?";
-        pstmtString += "SET date = ?, status = ?";
-        pstmtString += "WHERE id=?;";
-
-        int resultId = 0;
+        String query= "UPDATE '?' SET date = ?, status = ? WHERE id=?;";
+        // TODO : Add the Warehouse to update
+        int rows = -1;
         try {
-	        PreparedStatement pstmt = con.prepareStatement(pstmtString);
-	        pstmt.setString(1, WarehouseOrderDB.tableName);
-	        pstmt.setDate(2, Date.valueOf(value.getDate()));
-	        pstmt.setString(3, value.getStatus());
-	        pstmt.setInt(4, value.getId());
-	
-	        String query = "";
-	        resultId = dbConn.executeQuery(query);
-	    } catch (SQLException e) {
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+
+	        s.setString(1, WarehouseOrderDB.tableName);
+	        s.setDate(2, Date.valueOf(value.getDate()));
+	        s.setString(3, value.getStatus());
+	        s.setInt(4, value.getId());
+            
+            rows = db.executeQuery(s.toString());
+        } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new DataAccessException();
         }
-	    
-        return resultId;
+        return rows;
     }
 
     /**
@@ -155,26 +130,17 @@ public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
      * @see DBConnection executeQuery()
      */
     public int delete(WarehouseOrder value) throws DataAccessException {
-        DBConnection dbConn = DBConnection.getInstance();
-        Connection con = dbConn.getDBConn();
-
-        String pstmtString = "DELETE FROM ?";
-        pstmtString += "WHERE id=?;";
-        
-        int result = 0;
-        
+        String query = "DELETE FROM '?' WHERE id=?";
         try {
-	        PreparedStatement pstmt = con.prepareStatement(pstmtString);
-	        pstmt.setString(1, WarehouseOrderDB.tableName);
-	        pstmt.setInt(2, value.getId());
-	
-	        String query = "";
-	        result = dbConn.executeQuery(query);
-	    } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new DataAccessException();
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
+
+            s.setString(1, WarehouseOrderDB.tableName);
+            s.setInt(2, value.getId());
+
+            return db.executeQuery(s.toString());
+        } catch (SQLException e) {
+             System.err.println(e.getMessage());
+             throw new DataAccessException();
         }
-		
-        return result;
     }
 }
