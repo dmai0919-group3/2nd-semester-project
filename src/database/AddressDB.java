@@ -23,11 +23,11 @@ public class AddressDB implements DBInterface<Address> {
     public int create(Address value) {
         String query = "INSERT INTO '?' ('number', 'supplement', 'street', 'city', 'zipcode', 'region', 'country') VALUES (?, ? ,? , ?, ?, ?, ?);";
 
-        int resultID = null;
+        int resultID = -1;
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
 
-            s.setString(1, ProductDB.tableName);
+            s.setString(1, AddressDB.tableName);
             s.setString(2, value.getNumber());
             s.setString(3, value.getSupplement());
             s.setString(4, value.getStreet());
@@ -40,7 +40,7 @@ public class AddressDB implements DBInterface<Address> {
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
-        return 0;
+        return resultID;
     }
 
     /**
@@ -57,17 +57,20 @@ public class AddressDB implements DBInterface<Address> {
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
 
-            s.setString(1, ProductDB.tableName);
-            s.setString(2, id);
+            s.setString(1, AddressDB.tableName);
+            s.setInt(2, id);
 
             ResultSet rs = db.executeSelect(s.toString());
             if (rs.next()) {
                 return new Address(
                         rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getInt("weight"),
-                        rs.getDouble("price"),
-                        rs.getInt("minQuantity"));
+                        rs.getString("number"),
+                        rs.getString("supplement"),
+                        rs.getString("street"),
+                        rs.getString("city"),
+                        rs.getString("zipcode"),
+                        rs.getString("region"),
+                        rs.getString("country"));
             }
 
         } catch (SQLException e) {
@@ -91,8 +94,8 @@ public class AddressDB implements DBInterface<Address> {
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
 
-            s.setString(1, ProductDB.tableName);
             s.setString(2, column);
+            s.setString(1, AddressDB.tableName);
             s.setString(3, value);
 
             return db.executeSelect(s.toString());
@@ -112,12 +115,12 @@ public class AddressDB implements DBInterface<Address> {
      */
     @Override
     public int update(Address value) {
-        String query= "UPDATE '?' SET (number=?, supplement=?, street=?, city=?, zipcode=?, region=?, country=?) WHERE id=?;"
+        String query= "UPDATE '?' SET (number=?, supplement=?, street=?, city=?, zipcode=?, region=?, country=?) WHERE id=?;";
         int rows = -1;
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(query);
 
-            s.setString(1, ProductDB.tableName);
+            s.setString(1, AddressDB.tableName);
             s.setString(2, value.getNumber());
             s.setString(3, value.getSupplement());
             s.setString(4, value.getStreet());
@@ -125,14 +128,13 @@ public class AddressDB implements DBInterface<Address> {
             s.setString(6, value.getZipcode());
             s.setString(7, value.getRegion());
             s.setString(8, value.getCountry());
-            s.setString(9, value.getId());
+            s.setInt(9, value.getId());
 
             rows = db.executeQuery(s.toString());
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
         return rows;
-        return 0;
     }
 
     /**
@@ -147,10 +149,10 @@ public class AddressDB implements DBInterface<Address> {
         // Because of the tables cascade rule, we dont need to have separate stock query
         String query = "DELETE FROM '?' WHERE id=?";
         try {
-            PreparedStatement s = db.getDBConn().prepareStatement(queryProd);
+            PreparedStatement s = db.getDBConn().prepareStatement(query);
 
-            s.setString(1, ProductDB.tableName);
-            s.setString(2, value.getId());
+            s.setString(1, AddressDB.tableName);
+            s.setInt(2, value.getId());
 
             return db.executeQuery(s.toString());
         } catch (SQLException e) {

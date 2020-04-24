@@ -1,16 +1,13 @@
 package database;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Order;
-import model.OrderItem;
-import model.OrderStatus;
-import model.Store;
-import model.Warehouse;
+import model.*;
 
 public class OrderDB implements DBInterface<Order> {
 	
@@ -27,7 +24,7 @@ public class OrderDB implements DBInterface<Order> {
 			s.setInt(1, value.getStore().getId());
 			s.setInt(2, value.getWarehouse().getId());
 			s.setDouble(3, value.getPrice());
-			s.setDate(4, value.getDate());
+			s.setDate(4, Date.valueOf(value.getDate()));
 			
 			orderID = db.executeInsertWithID(query);
 			s.close();
@@ -39,7 +36,7 @@ public class OrderDB implements DBInterface<Order> {
 	}
 
 	@Override
-	public Order selectByID(int id) {
+	public Order selectByID(int id) throws DataAccessException {
 		// TODO
 		/*
 		 * Join warehouse, store, OrderItem and orderStatus tables
@@ -53,18 +50,19 @@ public class OrderDB implements DBInterface<Order> {
 			
 			ResultSet rs = db.executeSelect(s.toString());
 			if (rs.next()) {
-				// TODO
+				// TODO Implement query's for OrderRevisions and OrderItems
 				/*
 				 * Create the object basec on the JOIN QUERY
 				 */
+				UserDB userDB = new UserDB();
 				return new Order(
 						rs.getInt("id"),
-						rs.getDate("date"),
+						rs.getDate("date").toLocalDate(),
 						rs.getDouble("price"),
-						new Warehouse(),
-						new Store(),
-						new ArrayList<OrderItem>(),
-						new ArrayList<OrderStatus>());
+						(Warehouse) userDB.selectByID(rs.getInt("warehouseID")),
+						(Store) userDB.selectByID(rs.getInt("storeID")),
+						new ArrayList<>(),
+						new ArrayList<>());
 			}
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
