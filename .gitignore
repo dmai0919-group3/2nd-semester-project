@@ -27,3 +27,7 @@ hs_err_pid*
 *.iml
 /out/
 /bin/
+
+# Eclipse files
+.project
+.classpath

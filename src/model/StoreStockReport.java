@@ -1,17 +1,17 @@
 package model;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
-public class StockReport {
+public class StoreStockReport {
 
     private int id;
-    private LocalDate date;
+    private Date date;
     private String note;
     private Store store;
-    private List<StockReportItem> items;
+    private List<StoreStockReportItem> items;
 
-    public StockReport(int id, LocalDate date, String note, Store store, List<StockReportItem> items) {
+    public StoreStockReport(int id, Date date, String note, Store store, List<StoreStockReportItem> items) {
         this.id = id;
         this.date = date;
         this.note = note;
@@ -19,7 +19,7 @@ public class StockReport {
         this.items = items;
     }
 
-    public StockReport(LocalDate date, String note, Store store, List<StockReportItem> items) {
+    public StoreStockReport(Date date, String note, Store store, List<StoreStockReportItem> items) {
         this.date = date;
         this.note = note;
         this.store = store;
@@ -30,7 +30,7 @@ public class StockReport {
         return id;
     }
 
-    public LocalDate getDate(){
+    public java.sql.Date getDate(){
         return date;
     }
 
@@ -38,7 +38,7 @@ public class StockReport {
         return note;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(java.util.Date date) {
         this.date = date;
     }
 
@@ -54,15 +54,15 @@ public class StockReport {
         this.store = store;
     }
 
-    public void addItem(StockReportItem item) {
+    public void addItem(StoreStockReportItem item) {
         items.add(item);
     }
 
-    public List<StockReportItem> getItems() {
+    public List<StoreStockReportItem> getItems() {
         return items;
     }
 
-    public void setItems(List<StockReportItem> items) {
+    public void setItems(List<StoreStockReportItem> items) {
         this.items = items;
     }
 }
