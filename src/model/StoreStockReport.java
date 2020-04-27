@@ -1,17 +1,17 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class StoreStockReport {
 
     private int id;
-    private Date date;
+    private LocalDate date;
     private String note;
     private Store store;
     private List<StoreStockReportItem> items;
 
-    public StoreStockReport(int id, Date date, String note, Store store, List<StoreStockReportItem> items) {
+    public StoreStockReport(int id, LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
         this.id = id;
         this.date = date;
         this.note = note;
@@ -19,7 +19,7 @@ public class StoreStockReport {
         this.items = items;
     }
 
-    public StoreStockReport(Date date, String note, Store store, List<StoreStockReportItem> items) {
+    public StoreStockReport(LocalDate date, String note, Store store, List<StoreStockReportItem> items) {
         this.date = date;
         this.note = note;
         this.store = store;
@@ -30,7 +30,7 @@ public class StoreStockReport {
         return id;
     }
 
-    public java.sql.Date getDate(){
+    public LocalDate getDate(){
         return date;
     }
 
@@ -38,7 +38,7 @@ public class StoreStockReport {
         return note;
     }
 
-    public void setDate(java.util.Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
