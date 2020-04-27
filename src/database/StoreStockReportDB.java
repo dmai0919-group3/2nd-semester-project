@@ -9,6 +9,7 @@ import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
             s.setInt(1, value.getStore().getId());
-            s.setDate(2, value.getDate());
+            s.setDate(2, Date.valueOf(value.getDate()));
             s.setString(3, value.getNote());
             int id = db.executeInsertWithID(s.toString());
             for (StoreStockReportItem item : value.getItems()) {
@@ -78,7 +79,7 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
             if (rsStore.next()) {
                 report = new StoreStockReport(
                         rsStore.getInt("id"),
-                        rsStore.getDate("date"),
+                        rsStore.getDate("date").toLocalDate(),
                         rsStore.getString("note"),
                         (Store) userDB.selectByID(rsStore.getInt("date")),
                         items
@@ -129,7 +130,7 @@ public class StoreStockReportDB implements DBInterface<StoreStockReport> {
         int rows = -1;
         try {
             PreparedStatement s = db.getDBConn().prepareStatement(queryReport);
-            s.setDate(1, value.getDate());
+            s.setDate(1, Date.valueOf(value.getDate()));
             s.setString(2, value.getNote());
             s.setInt(3, value.getId());
             s.setInt(4, value.getStore().getId());
