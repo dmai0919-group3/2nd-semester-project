@@ -15,26 +15,30 @@ public class Product {
         this.price = price;
     }
 
-    public Product(String name, int weight, Double price)
+    public Product(String name, int weight, double price)
     {
         this.name = name;
         this.weight = weight;
         this.price = price;
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getWeight(){
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getWeight() {
         return weight;
     }
 
-    public double getPrice(){
+    public double getPrice() {
         return price;
     }
 
@@ -48,6 +52,11 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+    
+    @Override
+    public String toString() {
+        return name + " (" + price + " EUR)";
     }
 
 }

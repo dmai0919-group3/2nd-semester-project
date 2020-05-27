@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class StoreStockReport {
@@ -64,6 +65,10 @@ public class StoreStockReport {
 
     public void setItems(List<StoreStockReportItem> items) {
         this.items = items;
+    }
+
+    public String toString() {
+        return String.valueOf(this.getId()) + " : " + this.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " , " + this.getNote();
     }
 }
 
