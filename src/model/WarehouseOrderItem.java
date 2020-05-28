@@ -6,14 +6,13 @@ public class WarehouseOrderItem {
     private double unitPrice;
     private Product product;
 
-    public WarehouseOrderItem(int quantity, double unitPrice, Product product)
-    {
+    public WarehouseOrderItem(int quantity, double unitPrice, Product product) {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.product = product;
     }
 
-    public int getQuantity(){
+    public int getQuantity() {
         return quantity;
     }
 
@@ -35,6 +34,11 @@ public class WarehouseOrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    @Override
+    public String toString() {
+        return this.product.getName() + " (" + this.quantity + " pcs)";
     }
 
 }

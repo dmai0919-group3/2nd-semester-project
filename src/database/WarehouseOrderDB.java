@@ -1,151 +1,371 @@
 package database;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import model.Status;
-import model.WarehouseOrder;
-import model.Warehouse;
+import model.*;
 
-//TODO: Fix all methods
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * This class is used in connection with the DAO pattern
  */
-public class WarehouseOrderDB implements DBInterface<WarehouseOrder> {
-    DBConnection db = DBConnection.getInstance();
-
-    private static String tableName = "WarehouseOrder";
-
+public class WarehouseOrderDB implements WarehouseOrderDAO {
 
     /**
      * This method takes a WarehouseOrder and converts it to a valid SQL INSERT query, which is the executed
+     *
      * @param value it's the given WarehouseOrder Model
      * @return the generated key after the insertion to the DB
      * @see DBConnection executeInsertWithID() method
      */
     public int create(WarehouseOrder value) throws DataAccessException {
-        String query = "INSERT INTO ? (date, status) VALUES ? , ? ;";
+        DBConnection dbConn = DBConnection.getInstance();
+        Connection con = dbConn.getDBConn();
 
-        int resultID = -1;
-        try {
-            PreparedStatement s = db.getDBConn().prepareStatement(query);
+        String pstmtString = "INSERT INTO WarehouseOrder (providerID, warehouseID, date, status) VALUES (?, ?, ?, ?) ;";
 
-            s.setString(1, WarehouseOrderDB.tableName);
-            s.setDate(2, Date.valueOf(value.getDate()));
-            s.setString(3, value.getStatus().toString());
+        try (PreparedStatement pstmt = con.prepareStatement(pstmtString, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, value.getProvider().getId());
+            pstmt.setInt(2, value.getWarehouse().getId());
+            pstmt.setTimestamp(3, Timestamp.valueOf(value.getDate()));
+            pstmt.setString(4, value.getStatus().name());
 
-            resultID = db.executeInsertWithID(s.toString());
+
+            int id = dbConn.executeInsertWithID(pstmt);
+
+            insertWarehouseOrderItems(value.getItems(), id);
+            insertWarehouseOrderRevision(value.getRevisions(), id);
+
+            return id;
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new DataAccessException();
+            throw new DataAccessException(e.getMessage());
         }
-        return resultID;
-     }
+    }
 
     /**
      * This method takes an ID and converts it to a valid SQL SELECT query, which is the executed
+     *
      * @param id is the ID which we want to search for in the database
      * @return the single WarehouseOrder with the given ID
      * @see DBConnection executeSelect() method
      */
     public WarehouseOrder selectByID(int id) throws DataAccessException {
-        String query = "SELECT TOP 1 * FROM '?' WHERE id=?;";
+        DBConnection dbConn = DBConnection.getInstance();
+        Connection con = dbConn.getDBConn();
 
-        try {
-	        PreparedStatement s = db.getDBConn().prepareStatement(query);
-	        s.setString(1, WarehouseOrderDB.tableName);
-	        s.setInt(2, id);
+        String query = "SELECT * FROM WarehouseOrder WHERE id=?";
+        String itemQuery = "select * from WarehouseOrderItem where orderID=?";
 
-	        ResultSet rs = db.executeSelect(s.toString());
+        try (PreparedStatement s = con.prepareStatement(query)) {
+            s.setInt(1, id);
 
-	
-            if (rs.first()) {
-                UserDB userDB = new UserDB();
-                ProviderDB providerDB = new ProviderDB();
-                return new WarehouseOrder (
+            ResultSet rs = dbConn.executeSelect(s);
+
+            if (rs.next()) {
+                DAOInterface<Warehouse> warehouseDAO = new WarehouseDB();
+                DAOInterface<Provider> providerDAO = new ProviderDB();
+                Warehouse warehouse = warehouseDAO.selectByID(rs.getInt("warehouseID"));
+                Provider provider = providerDAO.selectByID(rs.getInt("providerID"));
+
+                List<WarehouseOrderItem> warehouseOrderItems = new LinkedList<>();
+
+                WarehouseOrder order = new WarehouseOrder(
                         rs.getInt("id"),
-                        rs.getDate("date").toLocalDate(),
+                        rs.getTimestamp("date").toLocalDateTime(),
                         Status.valueOf(rs.getString("status")),
-                        (Warehouse) userDB.selectByID(rs.getInt("warehouseID")),
-                        providerDB.selectByID(rs.getInt("providerDB")),
-                        new ArrayList<>());
+                        warehouse,
+                        provider,
+                        warehouseOrderItems,
+                        new LinkedList<>()
+                );
+
+                try (PreparedStatement statement = con.prepareStatement(itemQuery)) {
+                    statement.setInt(1, order.getId());
+                    ProductDAO productDAO = new ProductDB();
+                    ResultSet resultSet = dbConn.executeSelect(statement);
+                    while (resultSet.next()) {
+                        WarehouseOrderItem orderItem = new WarehouseOrderItem(
+                                resultSet.getInt("quantity"),
+                                resultSet.getDouble("unitPrice"),
+                                productDAO.selectByID(resultSet.getInt("productID"))
+                        );
+                        warehouseOrderItems.add(orderItem);
+                    }
+                }
+                order.setRevisions(getWarehouseOrderRevisions(order));
+                order.setItems(warehouseOrderItems);
+                return order;
             }
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new DataAccessException();
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
         }
+
         return null;
     }
 
-	/**
-     * This method takes a column name and a search value, converts it to a valid SQL SELECT query, which is the executed
-     * @param column the columns name we want to search in
-     * @param value the value we want to search for
-     * @return the ResultSet containing all the results of the query
-     * @see DBConnection executeSelect() method
-     */
-    public ResultSet selectByString(String column, String value) throws DataAccessException {
-        String query = "SELECT * FROM '?' WHERE ?=?;";
-        try {
-            PreparedStatement s = db.getDBConn().prepareStatement(query);
+    @Override
+    public List<WarehouseOrder> all() throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
 
-            s.setString(1, WarehouseOrderDB.tableName);
-            s.setString(2, column);
-            s.setString(3, value);
-
-            return db.executeSelect(s.toString());
+        String query = "SELECT * FROM WarehouseOrder";
+        List<WarehouseOrder> orders = new LinkedList<>();
+        DAOInterface<Provider> providerDAO = new ProviderDB();
+        DAOInterface<Warehouse> warehouseDAO = new WarehouseDB();
+        try (PreparedStatement s = dbConn.getDBConn().prepareStatement(query)) {
+            ResultSet rs = dbConn.executeSelect(s);
+            while (rs.next()) {
+                WarehouseOrder order = new WarehouseOrder(
+                        rs.getInt("id"),
+                        rs.getTimestamp("date").toLocalDateTime(),
+                        Status.valueOf(rs.getString("status")),
+                        warehouseDAO.selectByID(rs.getInt("warehouseId")),
+                        providerDAO.selectByID(rs.getInt("providerId")),
+                        new LinkedList<>(),
+                        new LinkedList<>()
+                );
+                // Leave commented for better preformance
+                //order.setRevisions(getWarehouseOrderRevisions(order));
+                //order.setItems(getWarehouseOrderItems(order.getId()));
+                orders.add(order);
+            }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new DataAccessException();
+            throw new DataAccessException(e.getMessage());
         }
+        return orders;
     }
 
     /**
      * This method takes an object and converts it to a valid SQL UPDATE query, which is the executed
+     *
      * @param value it's the given T type object
      * @return the number of rows affected by the update
      * @see DBConnection executeQuery() method
      */
     public int update(WarehouseOrder value) throws DataAccessException {
-        String query= "UPDATE '?' SET date = ?, status = ? WHERE id=?;";
-        // TODO : Add the Warehouse to update
-        int rows = -1;
-        try {
-            PreparedStatement s = db.getDBConn().prepareStatement(query);
+        DBConnection dbConn = DBConnection.getInstance();
+        Connection con = dbConn.getDBConn();
 
-	        s.setString(1, WarehouseOrderDB.tableName);
-	        s.setDate(2, Date.valueOf(value.getDate()));
-	        s.setString(3, value.getStatus().toString());
-	        s.setInt(4, value.getId());
-            
-            rows = db.executeQuery(s.toString());
+        String query = "UPDATE WarehouseOrder SET date = ?, status = ? WHERE id=?;";
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setTimestamp(1, Timestamp.valueOf(value.getDate()));
+            pstmt.setString(2, value.getStatus().name());
+            pstmt.setInt(3, value.getId());
+
+            int updated = dbConn.executeQuery(pstmt);
+            if (updated == 1) {
+                insertWarehouseOrderItems(value.getItems(), value.getId());
+                insertWarehouseOrderRevision(value.getRevisions(), value.getId());
+            }
+
+            return updated;
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
+            System.out.println(e.getMessage());
             throw new DataAccessException();
         }
-        return rows;
     }
 
     /**
      * This method takes an object and converts it to a valid SQL DELETE query, which is the executed
+     *
      * @param value it's the given WarehouseOrder
      * @return the number of rows deleted from the table
      * @see DBConnection executeQuery()
      */
     public int delete(WarehouseOrder value) throws DataAccessException {
-        String query = "DELETE FROM '?' WHERE id=?";
-        try {
-            PreparedStatement s = db.getDBConn().prepareStatement(query);
+        DBConnection dbConn = DBConnection.getInstance();
+        Connection con = dbConn.getDBConn();
 
-            s.setString(1, WarehouseOrderDB.tableName);
-            s.setInt(2, value.getId());
+        String pstmtString = "DELETE FROM WarehouseOrder WHERE id=?;";
 
-            return db.executeQuery(s.toString());
+        try (PreparedStatement pstmt = con.prepareStatement(pstmtString)) {
+            pstmt.setInt(1, value.getId());
+
+            return dbConn.executeQuery(pstmt);
         } catch (SQLException e) {
-             System.err.println(e.getMessage());
-             throw new DataAccessException();
+            throw new DataAccessException();
         }
     }
+
+    @Override
+    public List<WarehouseOrder> getWarehouseOrders(Warehouse warehouse) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+
+        String query = "SELECT * FROM WarehouseOrder " +
+                "WHERE warehouseID=?;";
+        List<WarehouseOrder> orders = new LinkedList<>();
+        DAOInterface<Provider> providerDAO = new ProviderDB();
+        try (PreparedStatement s = dbConn.getDBConn().prepareStatement(query)) {
+            s.setInt(1, warehouse.getId());
+
+            ResultSet rs = dbConn.executeSelect(s);
+            while (rs.next()) {
+                WarehouseOrder order = new WarehouseOrder(
+                        rs.getInt("id"),
+                        rs.getTimestamp("date").toLocalDateTime(),
+                        Status.valueOf(rs.getString("status")),
+                        warehouse,
+                        providerDAO.selectByID(rs.getInt("providerId")),
+                        new LinkedList<>(),
+                        new LinkedList<>()
+                );
+                // Leave commented for better preformance
+                //order.setRevisions(getWarehouseOrderRevisions(order));
+                //order.setItems(getWarehouseOrderItems(order.getId()));
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return orders;
+    }
+
+    @Override
+    public List<WarehouseOrder> getWarehouseOrders(Provider provider) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+
+        String query = "SELECT * FROM WarehouseOrder " +
+                "WHERE providerID=?;";
+        List<WarehouseOrder> orders = new LinkedList<>();
+        DAOInterface<Warehouse> warehouseDAO = new WarehouseDB();
+        try (PreparedStatement s = dbConn.getDBConn().prepareStatement(query)) {
+            s.setInt(1, provider.getId());
+
+            ResultSet rs = dbConn.executeSelect(s);
+            while (rs.next()) {
+                WarehouseOrder order = new WarehouseOrder(
+                        rs.getInt("id"),
+                        rs.getTimestamp("date").toLocalDateTime(),
+                        Status.valueOf(rs.getString("status")),
+                        warehouseDAO.selectByID(rs.getInt("warehouseID")),
+                        provider,
+                        new LinkedList<>(),
+                        new LinkedList<>()
+                );
+                // Leave commented for better preformance
+                //order.setRevisions(getWarehouseOrderRevisions(order));
+                //order.setItems(getWarehouseOrderItems(order.getId()));
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return orders;
+    }
+
+    @Override
+    public List<WarehouseOrderItem> getWarehouseOrderItems(int warehouseOrderID) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+
+        String query = "SELECT * FROM WarehouseOrderItem WHERE orderID=?";
+        ProductDB productDB = new ProductDB();
+        List<WarehouseOrderItem> items = new LinkedList<>();
+        try (PreparedStatement s = dbConn.getDBConn().prepareStatement(query)) {
+            s.setInt(1, warehouseOrderID);
+            ResultSet rs = dbConn.executeSelect(s);
+            while (rs.next()) {
+                WarehouseOrderItem item = new WarehouseOrderItem(
+                        rs.getInt("quantity"),
+                        rs.getDouble("unitPrice"),
+                        productDB.selectByID(rs.getInt("productID"))
+                );
+                items.add(item);
+            }
+            return items;
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<WarehouseOrderRevision> getWarehouseOrderRevisions(WarehouseOrder warehouseOrder) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+
+        String query = "SELECT * FROM WarehouseOrderRevision WHERE orderID=?";
+        List<WarehouseOrderRevision> items = new LinkedList<>();
+        try (PreparedStatement s = dbConn.getDBConn().prepareStatement(query)) {
+            s.setInt(1, warehouseOrder.getId());
+            ResultSet rs = dbConn.executeSelect(s);
+            while (rs.next()) {
+                WarehouseOrderRevision item = new WarehouseOrderRevision(
+                        rs.getInt("id"),
+                        rs.getTimestamp("date").toLocalDateTime(),
+                        rs.getString("note"),
+                        Status.valueOf(rs.getString("status")),
+                        warehouseOrder
+                );
+                items.add(item);
+            }
+            return items;
+
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public int insertWarehouseOrderItems(List<WarehouseOrderItem> warehouseOrderItems, int warehouseOrderId) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+        int changes = 0;
+
+        String countQuery = "select count(*) as count from WarehouseOrderItem where orderID=? and productID=?";
+        String insertQuery = "insert into WarehouseOrderItem (orderID, productID, quantity, unitPrice) " +
+                "VALUES (?, ?, ?, ?);";
+
+        try {
+            for (WarehouseOrderItem warehouseOrderItem : warehouseOrderItems) {
+                PreparedStatement statement = dbConn.getDBConn().prepareStatement(countQuery);
+                statement.setInt(1, warehouseOrderId);
+                statement.setInt(2, warehouseOrderItem.getProduct().getId());
+
+                ResultSet rs = dbConn.executeSelect(statement);
+                if (rs.next()) {
+                    int count = rs.getInt("count");
+                    if (count == 0)  {
+                        statement = dbConn.getDBConn().prepareStatement(insertQuery);
+                        statement.setInt(1, warehouseOrderId);
+                        statement.setInt(2, warehouseOrderItem.getProduct().getId());
+                        statement.setInt(3, warehouseOrderItem.getQuantity());
+                        statement.setDouble(4, warehouseOrderItem.getUnitPrice());
+
+                        changes += dbConn.executeQuery(statement);
+                    }
+                }
+            }
+            return changes;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public int insertWarehouseOrderRevision(List<WarehouseOrderRevision> warehouseOrderRevisions, int warehouseOrderId) throws DataAccessException {
+        DBConnection dbConn = DBConnection.getInstance();
+
+        String insertQuery = "insert into WarehouseOrderRevision (orderID, status, date, note)" +
+                "VALUES (?, ?, ?, ?);";
+
+        for (WarehouseOrderRevision orderRevision : warehouseOrderRevisions) {
+            if (orderRevision.getId() == 0) {
+                try (PreparedStatement statement = dbConn.getDBConn().prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+
+                    statement.setInt(1, warehouseOrderId);
+                    statement.setString(2, orderRevision.getStatus().toString());
+                    statement.setTimestamp(3, Timestamp.valueOf(orderRevision.getDate()));
+                    statement.setString(4, orderRevision.getNote());
+                    return dbConn.executeInsertWithID(statement);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    throw new DataAccessException(e.getMessage());
+                }
+            }
+        }
+        return -1;
+
+    }
+
 }

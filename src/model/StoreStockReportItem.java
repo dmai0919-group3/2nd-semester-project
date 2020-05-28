@@ -10,7 +10,7 @@ public class StoreStockReportItem {
         this.quantity = quantity;
     }
 
-    public int getQuantity(){
+    public int getQuantity() {
         return quantity;
     }
 
@@ -24,6 +24,11 @@ public class StoreStockReportItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    @Override
+    public String toString() {
+        return this.product.getName() + " (" + this.quantity + " pcs)";
     }
 }
 

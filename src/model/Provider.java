@@ -24,40 +24,51 @@ public class Provider {
     }
 
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getName(){
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
         return name;
-    }
-
-    public String getEmail(){
-        return email;
-    }
-
-    public boolean getAvailable(){
-        return available;
-    }
-
-    public Address getAddress(){
-        return address;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 
     public void setAvailable(boolean available) {
         this.available = available;
     }
-    
+
+    public Address getAddress() {
+        return address;
+    }
+
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        String text = getName() + " (" + getAddress().getCity() + ", " + getAddress().getStreet() + ")";
+        if (!available) text += " - [Not available]";
+        return text;
     }
 }
 
