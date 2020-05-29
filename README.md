@@ -8,9 +8,17 @@
 
 ## Usage
 
-```
-Open the project in your favorite IDE, build and run the src/main/Main.java class.
-```
+* Download the software release zip file from the [Releases](https://github.com/dmai0919-group3/2nd-semester-project/releases) page
+* Extract it
+* Enter the database credentials into the **config.properties** file
+* Run the following command: `java -jar dmai0919_2Sem_3.jar`
+* Log in with the demo credentials:
+
+Role | Username | Password
+------------ | ------------- | -------------
+**Warehouse** | warehouse | password
+**Store** | store | password
+
 
 ## Author
 
