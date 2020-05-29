@@ -2,8 +2,6 @@
 <p>We will design and implement a warehouse management system for Tevos Drugstore.</p>
 <p>This is our exam project for the 2nd Semester in the Computer Science Course (class: dmai0919) at UCN.</p>
 
-![Compile project](https://github.com/dmai0919-group3/2nd-semester-project/workflows/Compile%20project/badge.svg?branch=dev)
-
 ### 🏠 [Homepage](https://github.com/dmai0919-group3/2nd-semester-project)
 
 ## Usage
