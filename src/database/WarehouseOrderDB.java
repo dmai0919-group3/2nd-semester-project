@@ -23,7 +23,7 @@ public class WarehouseOrderDB implements WarehouseOrderDAO {
         Connection con = dbConn.getDBConn();
 
         String pstmtString = "INSERT INTO WarehouseOrder (providerID, warehouseID, date, status) VALUES (?, ?, ?, ?) ;";
-
+        dbConn.setAutoCommit(false);
         try (PreparedStatement pstmt = con.prepareStatement(pstmtString, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, value.getProvider().getId());
             pstmt.setInt(2, value.getWarehouse().getId());
@@ -35,9 +35,11 @@ public class WarehouseOrderDB implements WarehouseOrderDAO {
 
             insertWarehouseOrderItems(value.getItems(), id);
             insertWarehouseOrderRevision(value.getRevisions(), id);
-
+            dbConn.getDBConn().commit();
+            dbConn.setAutoCommit(true);
             return id;
-        } catch (SQLException e) {
+        } catch (SQLException|DataAccessException e) {
+            dbConn.setAutoCommit(true);
             throw new DataAccessException(e.getMessage());
         }
     }
@@ -146,7 +148,7 @@ public class WarehouseOrderDB implements WarehouseOrderDAO {
         Connection con = dbConn.getDBConn();
 
         String query = "UPDATE WarehouseOrder SET date = ?, status = ? WHERE id=?;";
-
+        dbConn.setAutoCommit(false);
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setTimestamp(1, Timestamp.valueOf(value.getDate()));
             pstmt.setString(2, value.getStatus().name());
@@ -157,11 +159,11 @@ public class WarehouseOrderDB implements WarehouseOrderDAO {
                 insertWarehouseOrderItems(value.getItems(), value.getId());
                 insertWarehouseOrderRevision(value.getRevisions(), value.getId());
             }
-
+            dbConn.getDBConn().commit();
+            dbConn.setAutoCommit(true);
             return updated;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
+        } catch (SQLException|DataAccessException e) {
+            dbConn.setAutoCommit(true);
             throw new DataAccessException();
         }
     }
