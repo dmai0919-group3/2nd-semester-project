@@ -40,6 +40,7 @@ public class OrderDB implements OrderDAO {
                 "VALUES (?, ?, ?, ?);";
 
         int orderID = -1;
+        db.setAutoCommit(false);
         try (PreparedStatement s = db.getDBConn().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             s.setInt(1, value.getStore().getId());
             s.setInt(2, value.getWarehouse().getId());
@@ -84,8 +85,10 @@ public class OrderDB implements OrderDAO {
                     }
                 }
             }
-
-        } catch (SQLException e) {
+            db.getDBConn().commit();
+            db.setAutoCommit(true);
+        } catch (SQLException|DataAccessException e) {
+            db.setAutoCommit(true);
             throw new DataAccessException(e.getMessage());
         }
 
@@ -137,6 +140,7 @@ public class OrderDB implements OrderDAO {
     public int update(Order value) throws DataAccessException {
         String query = "UPDATE [Order] SET storeID=?, warehouseID=?, date=?, status=? WHERE id=?;";
         String queryItems = "UPDATE OrderItem SET quantity=? WHERE OrderID=? AND ProductID=?";
+        db.setAutoCommit(false);
         try (PreparedStatement s = db.getDBConn().prepareStatement(query)) {
             s.setInt(1, value.getStore().getId());
             s.setInt(2, value.getWarehouse().getId());
@@ -153,8 +157,11 @@ public class OrderDB implements OrderDAO {
                 }
             }
             insertOrderRevision(value.getRevisions(), value.getId());
+            db.getDBConn().commit();
+            db.setAutoCommit(true);
             return rows;
-        } catch (SQLException e) {
+        } catch (SQLException|DataAccessException e) {
+            db.setAutoCommit(true);
             throw new DataAccessException(e.getMessage());
         }
     }

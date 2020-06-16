@@ -90,6 +90,14 @@ public class DBConnection {
         return connection;
     }
 
+    public void setAutoCommit(boolean autoCommit) throws DataAccessException {
+        try {
+            this.connection.setAutoCommit(autoCommit);
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
     public Boolean instanceIsNull() {
         return (instance == null);
     }
